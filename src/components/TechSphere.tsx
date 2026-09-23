@@ -132,7 +132,6 @@ export function TechSphere({
                     <img
                       src={tech.logo}
                       alt={tech.name}
-                      loading="lazy"
                       draggable={false}
                       className="max-h-full max-w-full object-contain"
                     />

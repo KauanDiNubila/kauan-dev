@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react"
 import { useReveal } from "@/hooks/useReveal"
+import { Card } from "@/components/ui/card"
+import { TechSphere } from "@/components/TechSphere"
 
 const categories = [
   { title: "Linguagens", items: ["Java 21", "TypeScript"] },
@@ -36,6 +38,13 @@ const techIcons: { name: string; logo: string | null }[] = [
   ["Cloudflare", "https://cdn.simpleicons.org/cloudflare"],
 ].map(([name, logo]) => ({ name: name as string, logo }))
 
+const CENTER_INDEX = 9
+const sphereTechs = (() => {
+  const rest = techIcons.filter((t) => t.name !== "Java")
+  const java = techIcons.find((t) => t.name === "Java")!
+  return [...rest.slice(0, CENTER_INDEX), java, ...rest.slice(CENTER_INDEX)]
+})()
+
 export function Skills() {
   const { ref, revealed } = useReveal<HTMLDivElement>()
   const [expanded, setExpanded] = useState<string | null>(null)
@@ -57,7 +66,7 @@ export function Skills() {
 
           <div className="mb-10 grid grid-cols-1 gap-5 sm:grid-cols-2">
             {categories.map((cat) => (
-              <div key={cat.title} className="rounded-lg border border-border p-5.5">
+              <Card key={cat.title} className="p-5.5">
                 <div className="mb-3.5 flex items-center gap-2">
                   <span className="text-sm text-primary">#</span>
                   <h3 className="text-[15px] font-bold">{cat.title}</h3>
@@ -69,47 +78,15 @@ export function Skills() {
                     </span>
                   ))}
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
 
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(64px,1fr))] gap-3.5">
-            {techIcons.map((tech) => {
-              const isExpanded = expanded === tech.name
-              return (
-                <div
-                  key={tech.name}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={tech.name}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setExpanded((cur) => (cur === tech.name ? null : tech.name))
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault()
-                      setExpanded((cur) => (cur === tech.name ? null : tech.name))
-                    }
-                  }}
-                  className={`tech-item relative flex aspect-square cursor-pointer items-center justify-center rounded-[10px] border border-border bg-white p-2.5 ${
-                    isExpanded ? "expanded" : expanded ? "dimmed" : ""
-                  }`}
-                >
-                  {tech.logo ? (
-                    <img src={tech.logo} alt={tech.name} loading="lazy" className="max-h-full max-w-full object-contain" />
-                  ) : (
-                    <span className="text-center text-[10px] font-semibold text-[#4B4B47]">{tech.name}</span>
-                  )}
-                  {isExpanded && (
-                    <div className="absolute top-full left-1/2 mt-2 -translate-x-1/2 rounded-[3px] border border-border bg-white px-2 py-0.5 text-[11px] whitespace-nowrap text-foreground shadow-[0_4px_12px_rgba(0,0,0,0.08)]">
-                      {tech.name}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
+          <TechSphere
+            techs={sphereTechs}
+            expanded={expanded}
+            onToggle={(name) => setExpanded((cur) => (cur === name ? null : name))}
+          />
         </div>
       </div>
     </div>

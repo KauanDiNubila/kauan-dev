@@ -2,9 +2,8 @@
 
 import { motion } from "framer-motion";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { Autoplay, EffectCards, Navigation, Pagination } from "swiper/modules";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css/effect-cards";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import "swiper/css";
@@ -125,7 +124,6 @@ const Carousel_002 = ({
               }
             : false
         }
-        effect="cards"
         grabCursor={true}
         loop={loop}
         pagination={
@@ -145,11 +143,11 @@ const Carousel_002 = ({
         }
         className="Carousal_002"
         style={{ width, height }}
-        modules={[EffectCards, Autoplay, Pagination, Navigation]}
+        modules={[Autoplay, Pagination, Navigation]}
       >
         {images.map((media, index) =>
           media.type === "video" ? (
-            <SwiperSlide key={index} className="rounded-3xl">
+            <SwiperSlide key={index}>
               <video
                 className="h-full w-full object-cover"
                 src={media.src}
@@ -162,7 +160,7 @@ const Carousel_002 = ({
               />
             </SwiperSlide>
           ) : (
-            <SwiperSlide key={index} className="rounded-3xl">
+            <SwiperSlide key={index}>
               <img
                 className="h-full w-full object-cover"
                 src={media.src}

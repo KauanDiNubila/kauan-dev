@@ -2,6 +2,7 @@ const links = [
   { href: "#sobre", label: "sobre" },
   { href: "#projetos", label: "projetos" },
   { href: "#skills", label: "skills" },
+  { href: "#formacao", label: "formação" },
   { href: "#contato", label: "contato" },
 ]
 

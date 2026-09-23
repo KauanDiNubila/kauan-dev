@@ -5,7 +5,7 @@ type Project = {
   tag: string
   name: string
   repo: string
-  url: string
+  live: string
   desc: string
   features: string[]
   tech: string[]
@@ -43,6 +43,24 @@ export function ProjectCard({ project }: { project: Project }) {
           </span>
         ))}
       </div>
+      <div className="mt-6 flex flex-wrap gap-3.5">
+        <a
+          href={project.live}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded bg-primary px-[22px] py-3 text-sm font-semibold text-primary-foreground"
+        >
+          ver online ↗
+        </a>
+        <a
+          href={project.repo}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded border border-border px-[22px] py-3 text-sm font-semibold text-foreground"
+        >
+          código ↗
+        </a>
+      </div>
     </div>
   )
 
@@ -68,10 +86,15 @@ export function ProjectCard({ project }: { project: Project }) {
           <div className="flex h-7 w-7 shrink-0 items-center justify-center">
             <span className="h-4 w-4 rounded-full bg-[#9aa0a6] opacity-40" />
           </div>
-          <div className="mx-1.5 flex h-[30px] flex-1 items-center gap-2 overflow-hidden rounded-full bg-[#282a2d] px-3.5">
+          <a
+            href={project.live}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mx-1.5 flex h-[30px] flex-1 items-center gap-2 overflow-hidden rounded-full bg-[#282a2d] px-3.5"
+          >
             <span className="h-3 w-3 shrink-0 rounded-full bg-[#9aa0a6] opacity-40" />
-            <span className="truncate text-[13px] text-[#e8eaed]">{project.url}</span>
-          </div>
+            <span className="truncate text-[13px] text-[#e8eaed]">{new URL(project.live).host}</span>
+          </a>
           <div className="flex h-7 w-7 shrink-0 items-center justify-center">
             <span className="h-4 w-4 rounded-full bg-[#9aa0a6] opacity-40" />
           </div>

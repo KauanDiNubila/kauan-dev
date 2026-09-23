@@ -1,5 +1,3 @@
-const chips = ["Java 21", "Spring Boot", "PostgreSQL", "React"]
-
 export function Hero() {
   return (
     <div id="top" className="relative mx-auto max-w-[1080px] overflow-hidden px-6 pt-24 pb-20">
@@ -28,26 +26,11 @@ export function Hero() {
       </div>
 
       <p
-        className="hero-anim mb-6 max-w-[560px] text-[16px] text-muted-foreground"
+        className="hero-anim mb-8 max-w-[560px] text-[16px] text-muted-foreground"
         style={{ animation: "heroFadeUp .45s cubic-bezier(.16,1,.3,1) .7s both" }}
       >
-        Construo sistemas que não caem no fim de semana. Java, Spring Boot, café em
-        excesso e uma queda por resolver problema difícil com código simples.
+        Foco em Java, arquitetura de software e sistemas bem construídos.
       </p>
-
-      <div className="mb-8 flex flex-wrap gap-2">
-        {chips.map((c, i) => (
-          <span
-            key={c}
-            className="hero-anim rounded-[3px] bg-secondary px-2.5 py-1 text-xs text-muted-foreground"
-            style={{
-              animation: `heroFadeUp .4s cubic-bezier(.16,1,.3,1) ${(0.95 + i * 0.07).toFixed(2)}s both`,
-            }}
-          >
-            {c}
-          </span>
-        ))}
-      </div>
 
       <div className="flex flex-wrap gap-3.5">
         <a

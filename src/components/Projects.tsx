@@ -7,7 +7,7 @@ const projects: Project[] = [
     tag: "em produção",
     name: "Astra",
     repo: "https://github.com/KauanDiNubila/astra",
-    url: "astra-app.dev",
+    live: "https://astra-app.dev",
     desc: "Ecossistema de estudos com sessões de foco (Pomodoro), dashboard, metas, roadmaps de aprendizado, chat em tempo real e integração real com GitHub — tudo agregado sobre uma única unidade de dados: a sessão.",
     features: [
       "Auth com JWT + refresh token, OAuth2 (Google/GitHub) e recusa de senha já vazada (Have I Been Pwned)",
@@ -29,7 +29,7 @@ const projects: Project[] = [
     tag: "microserviços",
     name: "Lexo",
     repo: "https://github.com/KauanDiNubila/lexo-backend",
-    url: "lexo · docker compose up",
+    live: "https://lexo-kauan1.duckdns.org",
     desc: "SaaS multi-tenant para escritórios de advocacia, decomposto (estratégia strangler) em 9 microsserviços com service discovery, API Gateway e banco por serviço.",
     features: [
       "Segurança distribuída: gateway valida o JWT e injeta identidade via headers de confiança, com anti-spoofing",
@@ -56,10 +56,10 @@ export function Projects() {
       <div className="mx-auto max-w-[1080px] px-6 py-16">
         <div ref={ref} className={`reveal ${revealed ? "revealed" : ""}`}>
           <p className="mb-2.5 text-[13px] font-semibold text-primary">02 / projetos</p>
-          <h2 className="mb-3 text-[28px] font-bold">O que eu andei construindo</h2>
+          <h2 className="mb-3 text-[28px] font-bold">Do código ao deploy</h2>
           <p className="mb-12 max-w-[560px] text-sm text-[#5A5A54]">
-            Ainda não tenho experiência anterior pra listar aqui — então deixo os
-            projetos falarem por mim.
+            Projetos reais, desenvolvidos do zero e colocados em produção, aplicando na prática os conhecimentos
+            que venho construindo.
           </p>
 
           {projects.map((p) => (

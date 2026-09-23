@@ -13,15 +13,13 @@ export function About() {
               Back-end é onde eu penso melhor.
             </h2>
             <div className="max-w-[560px] text-[15px] text-muted-foreground">
-              <p className="mb-4">
-                Gosto de arquitetura que não precisa de manual pra ser entendida, de
-                API que responde rápido e de código que o próximo dev (ou eu, seis
-                meses depois) consiga ler sem sofrer.
-              </p>
               <p>
-                No dia a dia trabalho principalmente com <strong className="text-foreground">Java</strong> e{" "}
-                <strong className="text-foreground">Spring Boot</strong>, construindo sistemas de ponta
-                a ponta — da modelagem do banco até o endpoint que o front consome.
+                Sou desenvolvedor Back-End focado em{" "}
+                <strong className="text-foreground">Java</strong> e{" "}
+                <strong className="text-foreground">Spring Boot</strong>, com interesse em
+                arquitetura de software e desenvolvimento de sistemas. Atualmente curso
+                Análise e Desenvolvimento de Sistemas e trabalho continuamente em projetos
+                próprios.
               </p>
             </div>
           </div>

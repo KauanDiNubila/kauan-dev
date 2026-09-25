@@ -127,7 +127,7 @@ export function Education() {
           <p className="mb-2.5 text-[13px] font-semibold text-primary">04 / formação</p>
           <h2 className="mb-3 text-[28px] font-bold">Formação e cursos</h2>
           <p className="mb-9 max-w-[560px] text-sm text-[#5A5A54]">
-            Faculdade em andamento e quase 500 horas de estudo focadas em Java, Spring Boot, mensageria, segurança e
+            Faculdade em andamento e mais de 500 horas de estudo focadas em Java, Spring Boot, mensageria, segurança e
             DevOps.
           </p>
 

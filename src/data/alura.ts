@@ -127,10 +127,11 @@ export const aluraTracks: Track[] = [
   {
     name: "DevOps",
     kind: "avulso",
-    hours: 48,
+    hours: 56,
     courses: [
       c("Kubernetes: Pods, Services e ConfigMaps", "11/08/2026", "16/09/2026", 8),
       c("Kubernetes: Deployments, Volumes e Escalabilidade", "16/09/2026", "22/09/2026", 8),
+      c("Kubernetes: praticando e garantindo uma aplicação com LivenessProbe", "23/09/2026", "25/09/2026", 8),
       c("Integração Contínua: Pipeline Docker no Github Actions", "28/04/2026", "28/04/2026", 8),
       c("DevOps: trabalhando com repositórios no GitHub", "31/12/2025", "06/01/2026", 8),
       c("DevOps: construindo e gerindo containers com o Docker", "07/01/2026", "12/01/2026", 8),

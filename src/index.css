@@ -4,18 +4,22 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-sans: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --font-sans: 'General Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Cabinet Grotesk', var(--font-sans);
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     --color-border: var(--border);
     --color-input: var(--input);
     --color-ring: var(--ring);
     --color-background: var(--background);
     --color-foreground: var(--foreground);
+    --color-surface: var(--surface);
     --color-primary: var(--primary);
     --color-primary-foreground: var(--primary-foreground);
     --color-secondary: var(--secondary);
     --color-secondary-foreground: var(--secondary-foreground);
     --color-muted: var(--muted);
     --color-muted-foreground: var(--muted-foreground);
+    --color-subtle: var(--subtle);
     --color-accent: var(--accent);
     --color-accent-foreground: var(--accent-foreground);
     --color-card: var(--card);
@@ -27,21 +31,24 @@
 }
 
 :root {
+    color-scheme: light;
     --background: #FAFAF8;
-    --foreground: #16181D;
-    --card: #ffffff;
-    --card-foreground: #16181D;
-    --primary: #3B82F6;
-    --primary-foreground: #ffffff;
-    --secondary: #F0F0EC;
-    --secondary-foreground: #16181D;
-    --muted: #F0F0EC;
-    --muted-foreground: #5A5A54;
-    --accent: #3B82F6;
-    --accent-foreground: #ffffff;
-    --border: #E5E5E0;
-    --input: #E5E5E0;
-    --ring: #3B82F6;
+    --foreground: #111110;
+    --surface: #FFFFFF;
+    --card: #FFFFFF;
+    --card-foreground: #111110;
+    --primary: #E4570E;
+    --primary-foreground: #FFFFFF;
+    --secondary: #F1F1EC;
+    --secondary-foreground: #111110;
+    --muted: #F1F1EC;
+    --muted-foreground: #55554F;
+    --subtle: #8A8A83;
+    --accent: #E4570E;
+    --accent-foreground: #FFFFFF;
+    --border: rgba(0, 0, 0, 0.09);
+    --input: rgba(0, 0, 0, 0.09);
+    --ring: #E4570E;
     --radius: 0.5rem;
 }
 
@@ -50,63 +57,29 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
     font-family: var(--font-sans);
   }
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 70px;
+    background: var(--background);
+    overflow-y: scroll;
   }
   ::selection {
     background: var(--accent);
     color: #fff;
   }
-}
-
-/* reveal-on-scroll */
-.reveal {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1);
-}
-.reveal.revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-@keyframes heroNameIn {
-  0% { opacity: 0; transform: translateY(20px) scale(.98); filter: blur(8px); }
-  100% { opacity: 1; transform: none; filter: blur(0); }
-}
-@keyframes heroFadeUp {
-  0% { opacity: 0; transform: translateY(14px); }
-  100% { opacity: 1; transform: none; }
-}
-@keyframes heroRoleReveal {
-  0% { clip-path: inset(0 100% 0 0); }
-  100% { clip-path: inset(0 0% 0 0); }
-}
-@keyframes heroScan {
-  0% { background-position: -20% 0; opacity: 0; }
-  12% { opacity: 1; }
-  60% { opacity: 1; }
-  100% { background-position: 120% 0; opacity: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-anim, .hero-scan {
-    animation: none !important;
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
   }
 }
 
-/* tech icon grid (skills) */
-.tech-item {
-  transition: transform .25s cubic-bezier(.2,.8,.2,1), opacity .25s ease;
+html body[data-scroll-locked] {
+  margin-right: 0 !important;
 }
-.tech-item.dimmed { opacity: .35; }
-.tech-item.expanded { transform: scale(1.3) translateZ(30px); z-index: 5; }
 
-/* Skiper48 swipe carousel sizing for project demos */
 .Carousal_002 {
   padding-bottom: 50px !important;
 }

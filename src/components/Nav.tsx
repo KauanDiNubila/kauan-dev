@@ -8,19 +8,19 @@ const links = [
 
 export function Nav() {
   return (
-    <div className="sticky top-0 z-10 border-b border-border bg-background/90 backdrop-blur-sm">
+    <nav className="sticky top-0 z-30 border-b border-border bg-background/70 backdrop-blur-md">
       <div className="mx-auto flex h-[70px] max-w-[1080px] items-center justify-between px-6">
-        <a href="#top" className="text-[15px] font-bold text-foreground">
+        <a href="#top" className="font-mono text-[15px] font-bold text-foreground">
           kauan<span className="text-primary">.</span>dev
         </a>
-        <div className="hidden gap-7 text-[13px] text-muted-foreground sm:flex">
+        <div className="hidden gap-7 font-mono text-[13px] text-muted-foreground sm:flex">
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="hover:text-foreground">
+            <a key={l.href} href={l.href} className="transition-colors hover:text-foreground">
               {l.label}
             </a>
           ))}
         </div>
       </div>
-    </div>
+    </nav>
   )
 }

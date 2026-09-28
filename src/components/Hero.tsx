@@ -1,53 +1,66 @@
-export function Hero() {
-  return (
-    <div id="top" className="relative mx-auto max-w-[1080px] overflow-hidden px-6 pt-24 pb-20">
-      <div
-        className="hero-scan pointer-events-none absolute inset-0 bg-[length:16%_100%] bg-no-repeat opacity-0"
-        style={{
-          backgroundImage:
-            "linear-gradient(90deg, transparent, rgba(59,130,246,0.18), transparent)",
-          backgroundPosition: "-20% 0",
-          animation: "heroScan 1s cubic-bezier(.4,0,.2,1) .1s both",
-        }}
-      />
+import { useRef } from "react"
+import { gsap, prefersReducedMotion, SplitText, useGSAP } from "@/lib/gsap"
 
+export function Hero() {
+  const root = useRef<HTMLElement>(null)
+
+  useGSAP(
+    () => {
+      if (prefersReducedMotion()) return
+      const split = SplitText.create("[data-hero-name]", { type: "words,chars", mask: "chars" })
+      gsap
+        .timeline({ defaults: { ease: "power4.out" }, delay: 0.15 })
+        .from(split.chars, { yPercent: 110, duration: 1.1, stagger: 0.035 })
+        .fromTo(
+          "[data-hero-role]",
+          { clipPath: "inset(0 100% 0 0)" },
+          { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "steps(24)" },
+          "-=0.55"
+        )
+        .from("[data-hero-fade]", { autoAlpha: 0, y: 18, duration: 0.8, stagger: 0.1 }, "-=0.2")
+    },
+    { scope: root }
+  )
+
+  return (
+    <section
+      id="top"
+      ref={root}
+      className="relative mx-auto flex min-h-[calc(100svh-70px)] max-w-[1080px] flex-col justify-center px-6 py-24"
+    >
       <h1
-        className="hero-anim mb-3 text-[42px] font-bold tracking-[-0.5px] sm:text-[58px]"
-        style={{ animation: "heroNameIn .5s cubic-bezier(.16,1,.3,1) .05s both" }}
+        data-hero-name
+        className="mb-5 text-[44px] leading-[1.05] font-extrabold tracking-[-1.5px] sm:text-[72px]"
       >
         Kauan Di Nubila
       </h1>
 
-      <div
-        className="mb-6 inline-block whitespace-nowrap text-[22px] font-semibold text-primary"
-        style={{ animation: "heroRoleReveal .5s steps(22,end) .4s both" }}
-      >
+      <div data-hero-role className="mb-6 inline-block self-start font-mono text-[20px] font-semibold whitespace-nowrap text-primary sm:text-[24px]">
         // Desenvolvedor Back-End
       </div>
 
-      <p
-        className="hero-anim mb-8 max-w-[560px] text-[16px] text-muted-foreground"
-        style={{ animation: "heroFadeUp .45s cubic-bezier(.16,1,.3,1) .7s both" }}
-      >
+      <p data-hero-fade className="mb-10 max-w-[520px] text-[16px] text-muted-foreground">
         Foco em Java, arquitetura de software e sistemas bem construídos.
       </p>
 
-      <div className="flex flex-wrap gap-3.5">
+      <div data-hero-fade className="flex flex-wrap gap-3.5">
         <a
           href="#projetos"
-          className="hero-anim rounded bg-primary px-[22px] py-3 text-sm font-semibold text-primary-foreground"
-          style={{ animation: "heroFadeUp .4s cubic-bezier(.16,1,.3,1) 1.3s both" }}
+          className="rounded bg-primary px-[22px] py-3 font-mono text-sm font-semibold text-primary-foreground transition-[filter] hover:brightness-110"
         >
           ver projetos
         </a>
         <a
           href="#contato"
-          className="hero-anim rounded border border-border px-[22px] py-3 text-sm font-semibold text-foreground"
-          style={{ animation: "heroFadeUp .4s cubic-bezier(.16,1,.3,1) 1.37s both" }}
+          className="rounded border border-border bg-surface/60 px-[22px] py-3 font-mono text-sm font-semibold text-foreground backdrop-blur-sm transition-colors hover:border-primary/40"
         >
           falar comigo
         </a>
       </div>
-    </div>
+
+      <span data-hero-fade className="absolute bottom-8 left-6 font-mono text-[11px] text-subtle">
+        role para baixo ↓
+      </span>
+    </section>
   )
 }

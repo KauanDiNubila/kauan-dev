@@ -1,94 +1,97 @@
-import { useEffect, useState } from "react"
-import { useReveal } from "@/hooks/useReveal"
+import { useSectionReveal } from "@/hooks/useSectionReveal"
 import { Card } from "@/components/ui/card"
-import { TechSphere } from "@/components/TechSphere"
 
-const categories = [
-  { title: "Linguagens", items: ["Java 21", "TypeScript"] },
+type Tech = { name: string; icon?: string }
+
+const icon = (slug: string) => `/icons/tech/${slug}.svg`
+
+const categories: { title: string; items: Tech[] }[] = [
   {
-    title: "Back-end & arquitetura",
-    items: ["Spring Boot", "Spring Cloud", "Spring Security", "Microsserviços", "WebSocket / STOMP"],
+    title: "Linguagens & back-end",
+    items: [
+      { name: "Java 21", icon: icon("java") },
+      { name: "Spring Boot", icon: icon("spring-boot") },
+      { name: "Spring Cloud", icon: icon("spring-cloud") },
+      { name: "Spring Data JPA", icon: icon("spring-data-jpa") },
+      { name: "Spring Security" },
+      { name: "Swagger / OpenAPI", icon: icon("swagger-openapi") },
+      { name: "TypeScript" },
+    ],
   },
-  { title: "Dados & mensageria", items: ["PostgreSQL", "Redis", "Apache Kafka", "RabbitMQ"] },
   {
-    title: "DevOps & qualidade",
-    items: ["Docker", "GitHub Actions (CI)", "JUnit 5 / Testcontainers", "Resilience4j"],
+    title: "Arquitetura & mensageria",
+    items: [
+      { name: "Microsserviços" },
+      { name: "Apache Kafka", icon: icon("apache-kafka") },
+      { name: "RabbitMQ", icon: icon("rabbitmq") },
+      { name: "WebSocket / STOMP" },
+      { name: "Resilience4j" },
+    ],
+  },
+  {
+    title: "Dados",
+    items: [
+      { name: "PostgreSQL", icon: icon("postgresql") },
+      { name: "Redis", icon: icon("redis") },
+      { name: "Flyway", icon: icon("flyway") },
+    ],
+  },
+  {
+    title: "DevOps, cloud & qualidade",
+    items: [
+      { name: "Docker", icon: icon("docker") },
+      { name: "GitHub Actions", icon: icon("github-actions") },
+      { name: "Git", icon: icon("git") },
+      { name: "Maven", icon: icon("maven") },
+      { name: "JUnit 5", icon: icon("junit-5") },
+      { name: "Mockito" },
+      { name: "Testcontainers" },
+      { name: "Oracle Cloud", icon: icon("oracle-cloud") },
+      { name: "Vercel", icon: icon("vercel") },
+      { name: "Cloudflare", icon: icon("cloudflare") },
+    ],
   },
 ]
 
-const techIcons: { name: string; logo: string | null }[] = [
-  ["Java", "/icons/tech/java.svg"],
-  ["Spring Boot", "/icons/tech/spring-boot.svg"],
-  ["Spring Cloud", "/icons/tech/spring-cloud.svg"],
-  ["PostgreSQL", "/icons/tech/postgresql.svg"],
-  ["Spring Data JPA", "/icons/tech/spring-data-jpa.svg"],
-  ["Flyway", "/icons/tech/flyway.svg"],
-  ["Redis", "/icons/tech/redis.svg"],
-  ["Apache Kafka", "/icons/tech/apache-kafka.svg"],
-  ["RabbitMQ", "/icons/tech/rabbitmq.svg"],
-  ["Swagger/OpenAPI", "/icons/tech/swagger-openapi.svg"],
-  ["JUnit 5", "/icons/tech/junit-5.svg"],
-  ["Mockito", null],
-  ["Docker", "/icons/tech/docker.svg"],
-  ["GitHub Actions", "/icons/tech/github-actions.svg"],
-  ["Maven", "/icons/tech/maven.svg"],
-  ["Git", "/icons/tech/git.svg"],
-  ["Oracle Cloud", "/icons/tech/oracle-cloud.svg"],
-  ["Vercel", "/icons/tech/vercel.svg"],
-  ["Cloudflare", "/icons/tech/cloudflare.svg"],
-].map(([name, logo]) => ({ name: name as string, logo }))
-
-const CENTER_INDEX = 9
-const sphereTechs = (() => {
-  const rest = techIcons.filter((t) => t.name !== "Java")
-  const java = techIcons.find((t) => t.name === "Java")!
-  return [...rest.slice(0, CENTER_INDEX), java, ...rest.slice(CENTER_INDEX)]
-})()
-
 export function Skills() {
-  const { ref, revealed } = useReveal<HTMLDivElement>()
-  const [expanded, setExpanded] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (!expanded) return
-    const closeOnOutsideClick = () => setExpanded(null)
-    document.addEventListener("click", closeOnOutsideClick)
-    return () => document.removeEventListener("click", closeOnOutsideClick)
-  }, [expanded])
+  const ref = useSectionReveal<HTMLElement>()
 
   return (
-    <div id="skills" className="border-t border-border">
-      <div className="mx-auto max-w-[1080px] px-6 py-16">
-        <div ref={ref} className={`reveal ${revealed ? "revealed" : ""}`}>
-          <p className="mb-2.5 text-[13px] font-semibold text-primary">03 / skills</p>
-          <h2 className="mb-2 text-[28px] font-bold">Ferramentas do dia a dia</h2>
-          <p className="mb-7 text-[13px] text-[#8B8B85]">clique num ícone pra ver o nome</p>
+    <section id="skills" ref={ref} className="border-t border-border">
+      <div className="mx-auto max-w-[1080px] px-6 py-24">
+        <p data-reveal className="mb-2.5 font-mono text-[13px] font-semibold text-primary">
+          03 / skills
+        </p>
+        <h2 data-reveal className="mb-10 text-[28px] font-bold sm:text-[34px]">
+          Ferramentas do dia a dia
+        </h2>
 
-          <div className="mb-10 grid grid-cols-1 gap-5 sm:grid-cols-2">
-            {categories.map((cat) => (
-              <Card key={cat.title} className="p-5.5">
-                <div className="mb-3.5 flex items-center gap-2">
+        <div className="grid max-w-[620px] grid-cols-1 gap-4">
+          {categories.map((cat) => (
+            <div key={cat.title} data-reveal>
+              <Card className="h-full p-6">
+                <div className="mb-4 flex items-center gap-2 font-mono">
                   <span className="text-sm text-primary">#</span>
                   <h3 className="text-[15px] font-bold">{cat.title}</h3>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {cat.items.map((it) => (
-                    <span key={it} className="rounded-[3px] bg-secondary px-2.5 py-1 text-xs text-muted-foreground">
-                      {it}
-                    </span>
+                <ul className="flex flex-wrap gap-2 font-mono">
+                  {cat.items.map((t) => (
+                    <li
+                      key={t.name}
+                      className="flex items-center gap-2 rounded-[4px] border border-border bg-secondary/70 px-2.5 py-1.5 text-xs text-muted-foreground"
+                    >
+                      {t.icon && (
+                        <img src={t.icon} alt="" className="h-3.5 w-3.5 shrink-0" />
+                      )}
+                      {t.name}
+                    </li>
                   ))}
-                </div>
+                </ul>
               </Card>
-            ))}
-          </div>
-
-          <TechSphere
-            techs={sphereTechs}
-            expanded={expanded}
-            onToggle={(name) => setExpanded((cur) => (cur === name ? null : name))}
-          />
+            </div>
+          ))}
         </div>
       </div>
-    </div>
+    </section>
   )
 }

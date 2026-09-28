@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react"
 import { Nav } from "@/components/Nav"
+import { ScrollIndicator } from "@/components/ScrollIndicator"
 import { Hero } from "@/components/Hero"
 import { About } from "@/components/About"
 import { Projects } from "@/components/Projects"
@@ -19,6 +20,7 @@ function App() {
         </Suspense>
       </SceneBoundary>
       <Nav />
+      <ScrollIndicator />
       <main className="relative z-10">
         <Hero />
         <About />

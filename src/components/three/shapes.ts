@@ -119,10 +119,12 @@ export function createStages(count: number) {
   const services = 9
   const clusterSize = Math.max(3, Math.floor((m * 0.62) / services))
   const lexo = blank(0.32 * Math.cbrt(5 / clusterSize), 1)
+  const lexoHubs: Vec3[] = []
   idx = 1
   for (let s = 0; s < services; s++) {
     const ang = (s / services) * Math.PI * 2
     const center = rotate([Math.cos(ang) * 2.05, 0, Math.sin(ang) * 2.05], 0.5, 0)
+    lexoHubs.push(center)
     for (let k = 0; k < clusterSize; k++, idx++) {
       const [x, y, z] = unit()
       const r = k === 0 ? 0 : 0.32 * Math.cbrt(rand())
@@ -178,5 +180,5 @@ export function createStages(count: number) {
     put(contact, k, [x * 1.05, y * 1.05, z * 1.05], 1)
   }
 
-  return { stages: [hero, about, astra, lexo, skills, edu, contact], random, accent }
+  return { stages: [hero, about, astra, lexo, skills, edu, contact], random, accent, lexoHubs }
 }

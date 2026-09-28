@@ -9,6 +9,7 @@ import {
   LineSegments,
   NormalBlending,
   ShaderMaterial,
+  Vector3,
 } from "three"
 import { createStages } from "@/components/three/shapes"
 import { useParticleScroll } from "@/components/three/useParticleScroll"
@@ -81,19 +82,43 @@ const MAX_SEGMENTS = 1100
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 const ease = (t: number) => t * t * (3 - 2 * t)
 const clamp01 = (t: number) => Math.min(Math.max(t, 0), 1)
+const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max)
 const PINNED_STAGE = 2
 const pinnedRemap = (raw: number) =>
   clamp01((raw - PROJECTS_DWELL_BEFORE) / (PROJECTS_MORPH_END - PROJECTS_DWELL_BEFORE))
 
-function Network({ count, desktop }: { count: number; desktop: React.RefObject<boolean> }) {
+export const LEXO_SERVICES = [
+  "discovery",
+  "gateway",
+  "auth",
+  "cliente",
+  "processo",
+  "financeiro",
+  "auditoria",
+  "notificação",
+  "ia",
+]
+
+type NetworkProps = {
+  count: number
+  desktop: React.RefObject<boolean>
+  labelRefs: React.RefObject<Array<HTMLDivElement | null>>
+  lineRefs: React.RefObject<Array<SVGLineElement | null>>
+  dotRefs: React.RefObject<Array<SVGCircleElement | null>>
+}
+
+function Network({ count, desktop, labelRefs, lineRefs, dotRefs }: NetworkProps) {
   const group = useRef<Group>(null)
   const target = useParticleScroll()
   const material = useRef<ShaderMaterial>(null)
   const reduced = useMemo(() => prefersReducedMotion(), [])
   const pixelRatio = useThree((s) => s.viewport.dpr)
+  const camera = useThree((s) => s.camera)
+  const size = useThree((s) => s.size)
   const state = useRef({ section: 0, intro: 0, links: 0 })
+  const tmp = useRef(new Vector3())
 
-  const { stages, random, accent } = useMemo(() => createStages(count), [count])
+  const { stages, random, accent, lexoHubs } = useMemo(() => createStages(count), [count])
   const positions = useMemo(() => new Float32Array(count * 3), [count])
   const alphas = useMemo(() => new Float32Array(count), [count])
   const hubWeights = useMemo(() => new Float32Array(count), [count])
@@ -169,16 +194,80 @@ function Network({ count, desktop }: { count: number; desktop: React.RefObject<b
     const A = stages[i]
     const B = stages[i + 1]
 
+    const lexoWeight = desktop.current ? (i === 2 ? t : i === 3 ? 1 - t : 0) : 0
+
     g.position.set(lerp(fa.x, fb.x, t), lerp(fa.y, fb.y, t), 0)
     g.scale.setScalar(lerp(fa.scale, fb.scale, t) * (0.85 + 0.15 * c.intro))
     if (!reduced) {
-      g.rotation.y += dt * 0.05
+      g.rotation.y += dt * 0.05 * (1 - lexoWeight)
       g.rotation.x = Math.sin(m.uniforms.uTime.value * 0.12) * 0.08
       m.uniforms.uTime.value += dt
     }
     const groupOpacity = lerp(fa.opacity, fb.opacity, t) * c.intro
     m.uniforms.uOpacity.value = groupOpacity
     m.uniforms.uPixelRatio.value = pixelRatio
+
+    const labels = labelRefs.current
+    const lines = lineRefs.current
+    const dots = dotRefs.current
+    if (labels.length) {
+      const labelOpacity = lexoWeight * groupOpacity
+      if (labelOpacity < 0.01) {
+        for (const el of labels) if (el) el.style.opacity = "0"
+        for (const el of lines) if (el) el.setAttribute("opacity", "0")
+        for (const el of dots) if (el) el.setAttribute("opacity", "0")
+      } else {
+        g.updateMatrixWorld()
+        tmp.current.set(0, 0, 0).applyMatrix4(g.matrixWorld).project(camera)
+        const hx0 = (tmp.current.x * 0.5 + 0.5) * size.width
+        const hy0 = (1 - (tmp.current.y * 0.5 + 0.5)) * size.height
+
+        for (let k = 0; k < lexoHubs.length; k++) {
+          const el = labels[k]
+          const lineEl = lines[k]
+          const dotEl = dots[k]
+          if (!el) continue
+          const [hx, hy, hz] = lexoHubs[k]
+          const p = tmp.current.set(hx, hy, hz).applyMatrix4(g.matrixWorld).project(camera)
+          if (p.z > 1) {
+            el.style.opacity = "0"
+            if (lineEl) lineEl.setAttribute("opacity", "0")
+            if (dotEl) dotEl.setAttribute("opacity", "0")
+            continue
+          }
+          const ax = (p.x * 0.5 + 0.5) * size.width
+          const ay = (1 - (p.y * 0.5 + 0.5)) * size.height
+          let dx = ax - hx0
+          let dy = ay - hy0
+          const dist = Math.hypot(dx, dy) || 1
+          dx /= dist
+          dy /= dist
+          const ex = clamp(ax + dx * 46, 16, size.width - 16)
+          const ey = clamp(ay + dy * 46, 96, size.height - 16)
+
+          if (dotEl) {
+            dotEl.setAttribute("cx", String(ax))
+            dotEl.setAttribute("cy", String(ay))
+            dotEl.setAttribute("opacity", String(labelOpacity))
+          }
+          if (lineEl) {
+            lineEl.setAttribute("x1", String(ax))
+            lineEl.setAttribute("y1", String(ay))
+            lineEl.setAttribute("x2", String(ex))
+            lineEl.setAttribute("y2", String(ey))
+            lineEl.setAttribute("opacity", String(labelOpacity * 0.55))
+          }
+          let pointRight = dx >= 0
+          if (ex > size.width - 110) pointRight = false
+          else if (ex < 110) pointRight = true
+          el.style.textAlign = pointRight ? "left" : "right"
+          el.style.transform = pointRight
+            ? `translate3d(${ex}px, ${ey}px, 0) translate(6px, -50%)`
+            : `translate3d(${ex}px, ${ey}px, 0) translate(calc(-100% - 6px), -50%)`
+          el.style.opacity = String(labelOpacity)
+        }
+      }
+    }
 
     for (let n = 0; n < count; n++) {
       const delay = random[n] * 0.35
@@ -276,6 +365,9 @@ export default function ParticleField() {
   const query = useMemo(() => window.matchMedia("(min-width: 768px)"), [])
   const desktop = useRef(query.matches)
   const count = useMemo(() => (query.matches ? 261 : 131), [query])
+  const labelRefs = useRef<Array<HTMLDivElement | null>>([])
+  const lineRefs = useRef<Array<SVGLineElement | null>>([])
+  const dotRefs = useRef<Array<SVGCircleElement | null>>([])
 
   useEffect(() => {
     const onChange = (e: MediaQueryListEvent) => {
@@ -286,15 +378,54 @@ export default function ParticleField() {
   }, [query])
 
   return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
-      <Canvas
-        camera={{ position: [0, 0, 7], fov: 45 }}
-        dpr={[1, 2]}
-        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-        style={{ pointerEvents: "none" }}
-      >
-        <Network count={count} desktop={desktop} />
-      </Canvas>
-    </div>
+    <>
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
+        <Canvas
+          camera={{ position: [0, 0, 7], fov: 45 }}
+          dpr={[1, 2]}
+          gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+          style={{ pointerEvents: "none" }}
+        >
+          <Network count={count} desktop={desktop} labelRefs={labelRefs} lineRefs={lineRefs} dotRefs={dotRefs} />
+        </Canvas>
+      </div>
+      <svg aria-hidden className="pointer-events-none fixed inset-0 z-10 hidden md:block">
+        {LEXO_SERVICES.map((name, i) => (
+          <line
+            key={name}
+            ref={(el) => {
+              lineRefs.current[i] = el
+            }}
+            stroke="var(--color-primary)"
+            strokeWidth="1"
+            opacity="0"
+          />
+        ))}
+        {LEXO_SERVICES.map((name, i) => (
+          <circle
+            key={name}
+            ref={(el) => {
+              dotRefs.current[i] = el
+            }}
+            r="2.5"
+            fill="var(--color-primary)"
+            opacity="0"
+          />
+        ))}
+      </svg>
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-10 hidden md:block">
+        {LEXO_SERVICES.map((name, i) => (
+          <div
+            key={name}
+            ref={(el) => {
+              labelRefs.current[i] = el
+            }}
+            className="absolute top-0 left-0 font-mono text-[10px] whitespace-nowrap text-foreground/75 opacity-0"
+          >
+            {name}
+          </div>
+        ))}
+      </div>
+    </>
   )
 }

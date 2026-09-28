@@ -64,7 +64,11 @@
     scroll-behavior: smooth;
     scroll-padding-top: 70px;
     background: var(--background);
-    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  html::-webkit-scrollbar {
+    display: none;
   }
   ::selection {
     background: var(--accent);

@@ -13,12 +13,23 @@ export function About() {
           <h2 data-reveal className="mb-6 max-w-[480px] text-[28px] leading-tight font-bold sm:text-[40px]">
             Back-end é onde eu penso melhor.
           </h2>
-          <p data-reveal className="text-[15px] leading-relaxed text-muted-foreground">
-            Sou desenvolvedor Back-End focado em <strong className="text-foreground">Java</strong> e{" "}
-            <strong className="text-foreground">Spring Boot</strong>, com interesse em arquitetura de software e
-            desenvolvimento de sistemas. Atualmente curso Análise e Desenvolvimento de Sistemas e trabalho
-            continuamente em projetos próprios.
-          </p>
+          <div className="flex flex-col gap-4 text-[15px] leading-relaxed text-muted-foreground">
+            <p data-reveal>
+              Sou estudante de Análise e Desenvolvimento de Sistemas e desenvolvedor Back-end com foco em Java e
+              Spring Boot. Tenho construído aplicações completas, desde a modelagem e desenvolvimento das APIs até
+              testes, segurança, infraestrutura e deploy em produção.
+            </p>
+            <p data-reveal>
+              Meu foco está no desenvolvimento de sistemas bem estruturados, com atenção a arquitetura, segurança,
+              integração entre serviços e qualidade de código. Nos meus projetos, tenho explorado tanto
+              arquiteturas modulares quanto microserviços, além de tecnologias como mensageria, comunicação em
+              tempo real e cloud.
+            </p>
+            <p data-reveal>
+              Atualmente, busco minha primeira oportunidade profissional na área, onde possa aplicar o que venho
+              construindo na prática, aprender com um time experiente e evoluir junto com projetos reais.
+            </p>
+          </div>
         </div>
       </div>
     </section>

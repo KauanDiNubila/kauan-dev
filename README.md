@@ -1,32 +1,45 @@
-# React + TypeScript + Vite
+# Portfólio · Kauan Di Nubila
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Site pessoal de um desenvolvedor back-end Java, com foco em mostrar sistemas que estão no ar: **[kauan-dev-puce.vercel.app](https://kauan-dev-puce.vercel.app)**
 
-Currently, two official plugins are available:
+O fundo é uma cena 3D de partículas que se reorganiza a cada seção, sempre em uma forma que espelha o conteúdo: uma nuvem no início, um núcleo com órbitas em "sobre", um monólito em treliça para o Astra, clusters ligados por um gateway para o Lexo, camadas para as skills e uma espiral para a formação.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Seções
 
-## React Compiler
+- **Início**: apresentação e links.
+- **Sobre**: quem sou e o que construo.
+- **Projetos**: [Astra](https://github.com/KauanDiNubila/astra) (monólito modular) e [Lexo](https://github.com/KauanDiNubila/lexo-backend) (microsserviços), ambos em produção.
+- **Skills**: agrupadas por categoria.
+- **Formação**: trilhas concluídas, com resumo na página e detalhes em uma gaveta.
+- **Contato**.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Stack
 
-## Expanding the Oxlint configuration
+| Camada | Tecnologia |
+|---|---|
+| Base | React 19, TypeScript, Vite |
+| Estilo | Tailwind CSS 4, shadcn/ui (Radix), fonte Geist |
+| 3D | three.js com React Three Fiber |
+| Animação | GSAP, Framer Motion |
+| Deploy | Vercel |
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Rodando localmente
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+Pré-requisito: Node.js 20 ou superior.
+
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+O site sobe em `http://localhost:5173`. Para gerar a build de produção e checar os tipos:
+
+```bash
+npm run build
+```
+
+## Decisões de design
+
+- **Tema claro com acento laranja** (`#E4570E`), sem o azul padrão de template.
+- **Movimento com sentido**: cada forma 3D representa o conteúdo da seção em que aparece, em vez de trocar de forma sem lógica.
+- Animações respeitam `prefers-reduced-motion`.

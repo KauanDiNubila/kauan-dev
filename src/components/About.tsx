@@ -15,9 +15,10 @@ export function About() {
           </h2>
           <div className="flex flex-col gap-4 text-[15px] leading-relaxed text-muted-foreground">
             <p data-reveal>
-              Sou estudante de Análise e Desenvolvimento de Sistemas e desenvolvedor Back-end com foco em Java e
-              Spring Boot. Tenho construído aplicações completas, desde a modelagem e desenvolvimento das APIs até
-              testes, segurança, infraestrutura e deploy em produção.
+              Meu nome é Kauan Di Nubila, tenho 20 anos e sou estudante de Análise e Desenvolvimento de Sistemas,
+              com foco em desenvolvimento Back-end com Java e Spring Boot. Tenho construído aplicações completas,
+              desde a modelagem e desenvolvimento das APIs até testes, segurança, infraestrutura e deploy em
+              produção.
             </p>
             <p data-reveal>
               Meu foco está no desenvolvimento de sistemas bem estruturados, com atenção a arquitetura, segurança,

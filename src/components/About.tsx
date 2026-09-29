@@ -5,7 +5,7 @@ export function About() {
 
   return (
     <section id="sobre" ref={ref} className="border-t border-border">
-      <div className="mx-auto flex min-h-[85svh] max-w-[1080px] flex-col justify-center px-6 py-24">
+      <div className="mx-auto flex min-h-[85svh] max-w-[1080px] flex-col justify-center px-6 pt-36 pb-24 md:pt-24">
         <div className="md:ml-auto md:max-w-[520px]">
           <p data-reveal className="mb-2.5 font-mono text-[13px] font-semibold text-primary">
             01 / sobre mim

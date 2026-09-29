@@ -27,13 +27,16 @@ const DESKTOP: Frame[] = [
   { x: 0, y: 0.95, scale: 0.95, opacity: 1 },
 ]
 
+const MOBILE_BAND_Y = 1.55
+const MOBILE_BAND_SCALE = 0.42
+
 const MOBILE: Frame[] = [
   { x: 0, y: 0.9, scale: 0.62, opacity: 0.6 },
-  { x: 0, y: -0.75, scale: 0.55, opacity: 0.5 },
-  { x: 0, y: 0.8, scale: 0.5, opacity: 0.45 },
-  { x: 0, y: 0.8, scale: 0.5, opacity: 0.45 },
-  { x: 0, y: -0.75, scale: 0.55, opacity: 0.45 },
-  { x: 0, y: -0.6, scale: 0.5, opacity: 0.45 },
+  { x: 0, y: MOBILE_BAND_Y, scale: MOBILE_BAND_SCALE, opacity: 0.55 },
+  { x: 0, y: MOBILE_BAND_Y, scale: MOBILE_BAND_SCALE, opacity: 0.55 },
+  { x: 0, y: MOBILE_BAND_Y, scale: MOBILE_BAND_SCALE, opacity: 0.55 },
+  { x: 0, y: MOBILE_BAND_Y, scale: MOBILE_BAND_SCALE, opacity: 0.55 },
+  { x: 0, y: MOBILE_BAND_Y, scale: MOBILE_BAND_SCALE, opacity: 0.55 },
   { x: 0, y: 0.5, scale: 0.55, opacity: 0.9 },
 ]
 

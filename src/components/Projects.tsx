@@ -54,7 +54,7 @@ export const PROJECTS_MORPH_END = 0.58
 
 function ProjectPanel({ project }: { project: Project }) {
   return (
-    <div data-project-panel id={`projeto-${project.name.toLowerCase()}`} className="flex w-full items-center py-16">
+    <div data-project-panel id={`projeto-${project.name.toLowerCase()}`} className="flex w-full items-center pt-28 pb-16 md:py-16">
       <div data-panel-inner className="mx-auto w-full max-w-[1080px] px-6">
         <div className="max-w-[600px]">
           <div className="mb-4 flex items-center gap-2.5 font-mono">

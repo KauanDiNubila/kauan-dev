@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import {
   BufferAttribute,
@@ -25,16 +25,6 @@ const DESKTOP: Frame[] = [
   { x: 2.6, y: 0, scale: 0.8, opacity: 1 },
   { x: 2.7, y: 0, scale: 0.85, opacity: 1 },
   { x: 0, y: 0.95, scale: 0.95, opacity: 1 },
-]
-
-const MOBILE: Frame[] = [
-  { x: 0, y: 0.9, scale: 0.62, opacity: 0.6 },
-  { x: 0, y: 0, scale: 0.55, opacity: 0 },
-  { x: 0, y: 0, scale: 0.55, opacity: 0 },
-  { x: 0, y: 0, scale: 0.55, opacity: 0 },
-  { x: 0, y: 0, scale: 0.55, opacity: 0 },
-  { x: 0, y: 0, scale: 0.55, opacity: 0 },
-  { x: 0, y: 0.5, scale: 0.55, opacity: 0.9 },
 ]
 
 const NODE_VERT = `
@@ -85,7 +75,7 @@ const PINNED_STAGE = 2
 const pinnedRemap = (raw: number) =>
   clamp01((raw - PROJECTS_DWELL_BEFORE) / (PROJECTS_MORPH_END - PROJECTS_DWELL_BEFORE))
 
-function Network({ count, desktop }: { count: number; desktop: React.RefObject<boolean> }) {
+function Network({ count }: { count: number }) {
   const group = useRef<Group>(null)
   const target = useParticleScroll()
   const material = useRef<ShaderMaterial>(null)
@@ -157,7 +147,7 @@ function Network({ count, desktop }: { count: number; desktop: React.RefObject<b
     const m = material.current
     if (!g || !m) return
     const c = state.current
-    const frames = desktop.current ? DESKTOP : MOBILE
+    const frames = DESKTOP
 
     c.section += (target.current - c.section) * (1 - Math.exp(-dt * 3.2))
     const i = Math.min(Math.floor(c.section), stages.length - 2)
@@ -274,16 +264,15 @@ function Network({ count, desktop }: { count: number; desktop: React.RefObject<b
 
 export default function ParticleField() {
   const query = useMemo(() => window.matchMedia("(min-width: 768px)"), [])
-  const desktop = useRef(query.matches)
-  const count = useMemo(() => (query.matches ? 261 : 131), [query])
+  const [isDesktop, setIsDesktop] = useState(query.matches)
 
   useEffect(() => {
-    const onChange = (e: MediaQueryListEvent) => {
-      desktop.current = e.matches
-    }
+    const onChange = (e: MediaQueryListEvent) => setIsDesktop(e.matches)
     query.addEventListener("change", onChange)
     return () => query.removeEventListener("change", onChange)
   }, [query])
+
+  if (!isDesktop) return null
 
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
@@ -293,7 +282,7 @@ export default function ParticleField() {
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         style={{ pointerEvents: "none" }}
       >
-        <Network count={count} desktop={desktop} />
+        <Network count={261} />
       </Canvas>
     </div>
   )

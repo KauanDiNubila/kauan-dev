@@ -72,7 +72,12 @@ export function Nav() {
       }`}
     >
       <div className="mx-auto flex h-[70px] max-w-[1080px] items-center justify-between px-6">
-        <a href="#top" className="font-mono text-[15px] font-bold text-foreground">
+        <a
+          href="#top"
+          className={`font-mono text-[15px] font-bold text-foreground transition-opacity duration-300 ease-out ${
+            scrolled ? "opacity-100" : "pointer-events-none opacity-0"
+          }`}
+        >
           kauan<span className="text-primary">.</span>dev
         </a>
         <div className="relative hidden h-full items-center gap-7 font-mono text-[13px] text-muted-foreground sm:flex">

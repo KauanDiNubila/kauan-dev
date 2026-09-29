@@ -51,7 +51,7 @@ export function Education() {
 
   return (
     <section id="formacao" ref={ref} className="border-t border-border">
-      <div className="mx-auto flex min-h-[100svh] max-w-[1080px] flex-col justify-center px-6 pt-36 pb-24 md:pt-24">
+      <div className="mx-auto flex min-h-[100svh] max-w-[1080px] flex-col justify-center px-6 py-24">
         <div className="max-w-[640px]">
         <p data-reveal className="mb-2.5 font-mono text-[13px] font-semibold text-primary">
           04 / formação

@@ -17,6 +17,12 @@ export function Contact() {
         </p>
         <div data-reveal className="flex flex-wrap justify-center gap-3.5">
           <a
+            href="mailto:kauandinubila@gmail.com"
+            className="inline-flex items-center gap-1.5 rounded bg-primary px-6 py-3.5 font-mono text-sm font-semibold text-primary-foreground transition-[filter] hover:brightness-110"
+          >
+            E-mail
+          </a>
+          <a
             href="https://github.com/KauanDiNubila"
             target="_blank"
             rel="noopener noreferrer"

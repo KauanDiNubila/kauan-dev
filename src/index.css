@@ -70,6 +70,22 @@
   html::-webkit-scrollbar {
     display: none;
   }
+  .orange-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) transparent;
+  }
+  .orange-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+  .orange-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .orange-scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--primary);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
   ::selection {
     background: var(--accent);
     color: #fff;

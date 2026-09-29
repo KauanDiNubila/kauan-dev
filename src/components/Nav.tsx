@@ -6,6 +6,7 @@ const links = [
   { href: "#projetos", label: "projetos" },
   { href: "#skills", label: "skills" },
   { href: "#formacao", label: "formação" },
+  { href: "#contato", label: "contato" },
 ]
 
 export function Nav() {
@@ -74,35 +75,27 @@ export function Nav() {
         <a href="#top" className="font-mono text-[15px] font-bold text-foreground">
           kauan<span className="text-primary">.</span>dev
         </a>
-        <div className="hidden items-center gap-7 sm:flex">
-          <div className="relative flex h-full items-center gap-7 font-mono text-[13px] text-muted-foreground">
-            {links.map((l) => (
-              <a
-                key={l.href}
-                ref={(el) => {
-                  if (el) linkRefs.current.set(l.href, el)
-                  else linkRefs.current.delete(l.href)
-                }}
-                href={l.href}
-                className={`transition-colors hover:text-foreground ${active === l.href ? "text-foreground" : ""}`}
-              >
-                {l.label}
-              </a>
-            ))}
-            <span
-              ref={indicatorRef}
-              aria-hidden
-              className={`pointer-events-none absolute bottom-0 left-0 h-[2px] rounded-full bg-primary opacity-0 ${
-                prefersReducedMotion() ? "" : "transition-[transform,width,opacity] duration-300 ease-out"
-              }`}
-            />
-          </div>
-          <a
-            href="#contato"
-            className="rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 font-mono text-[13px] text-primary transition-colors hover:bg-primary hover:text-background"
-          >
-            contato
-          </a>
+        <div className="relative hidden h-full items-center gap-7 font-mono text-[13px] text-muted-foreground sm:flex">
+          {links.map((l) => (
+            <a
+              key={l.href}
+              ref={(el) => {
+                if (el) linkRefs.current.set(l.href, el)
+                else linkRefs.current.delete(l.href)
+              }}
+              href={l.href}
+              className={`transition-colors hover:text-foreground ${active === l.href ? "text-foreground" : ""}`}
+            >
+              {l.label}
+            </a>
+          ))}
+          <span
+            ref={indicatorRef}
+            aria-hidden
+            className={`pointer-events-none absolute bottom-0 left-0 h-[2px] rounded-full bg-primary opacity-0 ${
+              prefersReducedMotion() ? "" : "transition-[transform,width,opacity] duration-300 ease-out"
+            }`}
+          />
         </div>
       </div>
     </nav>

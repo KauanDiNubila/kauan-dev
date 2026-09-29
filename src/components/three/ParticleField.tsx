@@ -29,11 +29,11 @@ const DESKTOP: Frame[] = [
 
 const MOBILE: Frame[] = [
   { x: 0, y: 0.9, scale: 0.62, opacity: 0.6 },
-  { x: 0, y: 0, scale: 0.55, opacity: 0.3 },
-  { x: 0, y: 0, scale: 0.55, opacity: 0.3 },
-  { x: 0, y: 0, scale: 0.55, opacity: 0.3 },
-  { x: 0, y: -0.3, scale: 0.55, opacity: 0.22 },
-  { x: 0, y: 0, scale: 0.5, opacity: 0.3 },
+  { x: 0, y: -0.75, scale: 0.55, opacity: 0.5 },
+  { x: 0, y: 0.8, scale: 0.5, opacity: 0.45 },
+  { x: 0, y: 0.8, scale: 0.5, opacity: 0.45 },
+  { x: 0, y: -0.75, scale: 0.55, opacity: 0.45 },
+  { x: 0, y: -0.6, scale: 0.5, opacity: 0.45 },
   { x: 0, y: 0.5, scale: 0.55, opacity: 0.9 },
 ]
 

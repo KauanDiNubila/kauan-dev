@@ -192,7 +192,7 @@ function DrawerPanel({ open, tracks, opener, onExited, period, byStart, dateLabe
           </Dialog.Close>
         </header>
 
-        <div className="flex-1 overflow-y-auto overscroll-contain px-6 py-5 [scrollbar-gutter:stable]">
+        <div className="orange-scrollbar flex-1 overflow-y-auto overscroll-contain px-6 py-5 [scrollbar-gutter:stable]">
           <div className="relative">
             <div aria-hidden className="absolute top-1.5 bottom-1.5 left-[4.5px] w-px bg-border" />
             <ol className="relative">

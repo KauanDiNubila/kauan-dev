@@ -13,7 +13,7 @@ import {
   Vector3,
 } from "three"
 import { createGalaxy } from "@/components/three/galaxyShape"
-import { sampleHands } from "@/components/three/hands"
+import { sampleHands, samplePortrait } from "@/components/three/hands"
 import { HERO_STATIC, JOURNEY, sampleJourney, type Keyframe } from "@/components/three/journey"
 import { gsap, prefersReducedMotion } from "@/lib/gsap"
 
@@ -22,6 +22,7 @@ const VERT = `
   attribute float aSize;
   attribute float aShade;
   attribute vec3 aHand;
+  attribute vec3 aPortrait;
   uniform float uTime;
   uniform float uIntro;
   uniform float uPixelRatio;
@@ -33,8 +34,13 @@ const VERT = `
   uniform float uHandW;
   uniform float uHandY;
   uniform float uGap;
+  uniform float uPortrait;
+  uniform vec3 uPortraitCenter;
+  uniform float uPortraitH;
+  uniform vec3 uCursor;
   varying float vShade;
   varying float vLen;
+  varying float vBoost;
 
   void main() {
     vec3 p = position;
@@ -60,16 +66,31 @@ const VERT = `
     );
     world.xyz = mix(world.xyz, hand, mk);
 
+    float pk = clamp(uPortrait * 1.6 - aRandom * 0.6, 0.0, 1.0);
+    pk = pk * pk * (3.0 - 2.0 * pk);
+    vec3 pp = uPortraitCenter + vec3(aPortrait.xy * uPortraitH, aPortrait.z);
+    vec2 cd = pp.xy - uCursor.xy;
+    float cdist = length(cd);
+    float cf = uCursor.z * smoothstep(0.45, 0.0, cdist);
+    cf *= cf;
+    pp.xy += (cd / max(cdist, 0.0001)) * cf * 0.14 * (0.5 + aRandom);
+    pp.z += cf * (aRandom - 0.5) * 0.6;
+    pp.y += sin(uTime * 0.8 + aPortrait.x * 9.0) * 0.006;
+    world.xyz = mix(world.xyz, pp, pk);
+
     vec4 mv = viewMatrix * world;
     gl_Position = projectionMatrix * mv;
     float depth = -mv.z;
     float base = min(aSize * uScale * uPixelRatio / depth, 4.0 * uPixelRatio);
     base = mix(base, (1.1 + aRandom * 0.6) * uPixelRatio, mk);
-    float len = 1.0 + uStretch * 10.0 * clamp(6.0 / depth, 0.4, 2.0);
+    base = mix(base, (1.0 + aRandom * 0.6) * uPixelRatio, pk);
+    float len = 1.0 + uStretch * (1.0 - pk) * 10.0 * clamp(6.0 / depth, 0.4, 2.0);
     gl_PointSize = min(base * len, 72.0 * uPixelRatio);
     vLen = gl_PointSize / max(base, 0.0001);
     float twinkle = 0.78 + 0.22 * sin(uTime * (1.2 + aRandom * 3.0) + aRandom * 100.0);
     float shade = mix(aShade * twinkle, 0.7 + 0.2 * twinkle, mk);
+    shade = mix(shade, 0.72 + 0.2 * twinkle, pk);
+    vBoost = pk;
     vShade = shade * k * smoothstep(0.3, 1.8, depth) * mix(1.0, 0.55, uStretch);
   }
 `
@@ -79,6 +100,7 @@ const FRAG = `
   uniform float uAngle;
   varying float vShade;
   varying float vLen;
+  varying float vBoost;
 
   void main() {
     vec2 c = gl_PointCoord - 0.5;
@@ -88,7 +110,7 @@ const FRAG = `
     float across = r.y * vLen;
     if (r.x * r.x + across * across > 0.25) discard;
     float tail = 1.0 - smoothstep(0.0, 0.5, abs(r.x)) * step(1.5, vLen) * 0.8;
-    gl_FragColor = vec4(0.93, 0.93, 0.91, vShade * uOpacity * tail);
+    gl_FragColor = vec4(0.93, 0.93, 0.91, vShade * mix(uOpacity, 0.95, vBoost) * tail);
   }
 `
 
@@ -129,6 +151,7 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
     geo.setAttribute("aSize", new BufferAttribute(g.size, 1))
     geo.setAttribute("aShade", new BufferAttribute(g.shade, 1))
     geo.setAttribute("aHand", new BufferAttribute(new Float32Array(count * 3), 3))
+    geo.setAttribute("aPortrait", new BufferAttribute(new Float32Array(count * 3), 3))
     return geo
   }, [count])
 
@@ -147,6 +170,10 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
       uHandW: { value: 10 },
       uHandY: { value: HAND_Y },
       uGap: { value: 0.2 },
+      uPortrait: { value: 0 },
+      uPortraitCenter: { value: new Vector3() },
+      uPortraitH: { value: 4 },
+      uCursor: { value: new Vector3() },
     }),
     []
   )
@@ -168,14 +195,14 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
   useEffect(() => {
     if (!journey) return
     let cancelled = false
-    sampleHands(count)
-      .then((points) => {
-        if (cancelled) return
-        const attr = geometry.getAttribute("aHand") as BufferAttribute
-        ;(attr.array as Float32Array).set(points)
-        attr.needsUpdate = true
-      })
-      .catch(() => {})
+    const fill = (name: string) => (points: Float32Array) => {
+      if (cancelled) return
+      const attr = geometry.getAttribute(name) as BufferAttribute
+      ;(attr.array as Float32Array).set(points)
+      attr.needsUpdate = true
+    }
+    sampleHands(count).then(fill("aHand")).catch(() => {})
+    samplePortrait(count).then(fill("aPortrait")).catch(() => {})
     return () => {
       cancelled = true
     }
@@ -257,6 +284,25 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
     const gapTarget = 0.2 * (1 - closeness) - 0.04 * closeness
     mo.gap += (gapTarget - mo.gap) * (1 - Math.exp(-step * 2.5))
     m.uniforms.uGap.value = mo.gap
+
+    const halfH = VISIBLE_HEIGHT / 2
+    const halfW = halfH * aspect
+    const u = m.uniforms
+    const portraitEl = document.querySelector<HTMLElement>("[data-portrait]")
+    let portraitTarget = 0
+    if (portraitEl) {
+      const r = portraitEl.getBoundingClientRect()
+      const cy = r.top + r.height / 2
+      const cx = r.left + r.width / 2
+      u.uPortraitCenter.value.set(((cx / window.innerWidth) * 2 - 1) * halfW, -((cy / vh) * 2 - 1) * halfH, 0)
+      u.uPortraitH.value = (r.height / vh) * VISIBLE_HEIGHT
+      const section = document.getElementById("sobre")?.getBoundingClientRect()
+      if (section && section.top < vh * 0.45 && section.bottom > vh * 0.55) portraitTarget = 1
+    }
+    u.uPortrait.value += (portraitTarget - u.uPortrait.value) * (1 - Math.exp(-step * (portraitTarget ? 1.6 : 2.4)))
+    const cursorOn = pointer.current.inside && u.uPortrait.value > 0.5 ? 1 : 0
+    if (pointer.current.inside) u.uCursor.value.set(pointer.current.ndc.x * halfW, pointer.current.ndc.y * halfH, u.uCursor.value.z)
+    u.uCursor.value.z += (cursorOn - u.uCursor.value.z) * (1 - Math.exp(-step * 5))
 
     const heroWeight = 1 - Math.min(y / vh, 1)
     let target = 0

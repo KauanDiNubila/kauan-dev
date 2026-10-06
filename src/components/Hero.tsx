@@ -1,12 +1,14 @@
 import { lazy, Suspense, useRef } from "react"
 import { SceneBoundary } from "@/components/three/SceneBoundary"
 import { Star } from "@/components/Star"
+import { useDesktop } from "@/hooks/useDesktop"
 import { gsap, prefersReducedMotion, SplitText, useGSAP } from "@/lib/gsap"
 
 const Galaxy = lazy(() => import("@/components/three/Galaxy"))
 
 export function Hero() {
   const root = useRef<HTMLElement>(null)
+  const desktop = useDesktop()
 
   useGSAP(
     () => {
@@ -23,11 +25,13 @@ export function Hero() {
 
   return (
     <section id="top" ref={root} className="relative h-svh min-h-[620px] overflow-hidden">
-      <SceneBoundary>
-        <Suspense fallback={null}>
-          <Galaxy />
-        </Suspense>
-      </SceneBoundary>
+      {!desktop && (
+        <SceneBoundary>
+          <Suspense fallback={null}>
+            <Galaxy mode="static" />
+          </Suspense>
+        </SceneBoundary>
+      )}
 
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_100%,rgba(7,7,7,0.85),transparent_60%)]" />
 

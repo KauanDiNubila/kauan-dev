@@ -25,12 +25,12 @@ export function About() {
       <div className="mx-auto grid max-w-[1320px] gap-14 px-5 pt-40 pb-32 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-16 md:px-10">
         <div className="md:order-none">
           {desktop ? (
-            <div data-portrait aria-hidden className="sticky top-[14vh] mx-auto aspect-[600/1050] h-[72vh] max-w-full" />
+            <div data-portrait aria-hidden className="sticky top-[18vh] mx-auto aspect-[720/760] h-[62vh] max-w-full" />
           ) : (
             <img
               src="/portrait-dither.png"
               alt="Retrato de Kauan Di Nubila em pontos"
-              className="mx-auto w-[58%] max-w-[300px]"
+              className="mx-auto w-[78%] max-w-[360px]"
             />
           )}
         </div>

@@ -83,13 +83,13 @@ const VERT = `
     float depth = -mv.z;
     float base = min(aSize * uScale * uPixelRatio / depth, 4.0 * uPixelRatio);
     base = mix(base, (1.1 + aRandom * 0.6) * uPixelRatio, mk);
-    base = mix(base, (1.0 + aRandom * 0.6) * uPixelRatio, pk);
+    base = mix(base, (0.9 + aRandom * 0.5) * uPixelRatio, pk);
     float len = 1.0 + uStretch * (1.0 - pk) * 10.0 * clamp(6.0 / depth, 0.4, 2.0);
     gl_PointSize = min(base * len, 72.0 * uPixelRatio);
     vLen = gl_PointSize / max(base, 0.0001);
     float twinkle = 0.78 + 0.22 * sin(uTime * (1.2 + aRandom * 3.0) + aRandom * 100.0);
     float shade = mix(aShade * twinkle, 0.7 + 0.2 * twinkle, mk);
-    shade = mix(shade, 0.72 + 0.2 * twinkle, pk);
+    shade = mix(shade, 0.6 + 0.15 * twinkle, pk);
     vBoost = pk;
     vShade = shade * k * smoothstep(0.3, 1.8, depth) * mix(1.0, 0.55, uStretch);
   }

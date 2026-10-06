@@ -8,7 +8,7 @@ const links = [
 
 export function Nav() {
   return (
-    <nav className="fixed inset-x-0 top-0 z-40 bg-gradient-to-b from-background via-background/80 to-transparent">
+    <nav className="fixed inset-x-0 top-0 z-40 bg-linear-to-b from-background via-background/80 to-transparent">
       <div className="mx-auto flex h-20 max-w-[1320px] items-center justify-between px-5 font-mono text-[11px] tracking-[0.14em] text-foreground uppercase md:px-10">
         <span className="opacity-60">portfólio — 2026</span>
         <div className="hidden gap-7 md:flex">

@@ -61,3 +61,4 @@ export const projects: Project[] = [
 ]
 
 export const shots = (p: Project) => [1, 2, 3, 4].map((n) => `/images/${p.slug}/${n}.png`)
+export const cover = (p: Project) => `/images/${p.slug}/2.png`

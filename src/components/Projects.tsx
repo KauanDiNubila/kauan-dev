@@ -1,57 +1,8 @@
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { Sheet } from "@/components/Sheet"
-import { projects, shots, type Project } from "@/data/projects"
+import { cover, projects, shots, type Project } from "@/data/projects"
 import { useDesktop } from "@/hooks/useDesktop"
 import { useSectionReveal } from "@/hooks/useSectionReveal"
-import { gsap } from "@/lib/gsap"
-
-function Preview({ active }: { active: Project | null }) {
-  const box = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const el = box.current
-    if (!el) return
-    const x = gsap.quickTo(el, "x", { duration: 0.6, ease: "power3.out" })
-    const y = gsap.quickTo(el, "y", { duration: 0.6, ease: "power3.out" })
-    const onMove = (e: PointerEvent) => {
-      x(e.clientX)
-      y(e.clientY)
-    }
-    window.addEventListener("pointermove", onMove, { passive: true })
-    return () => window.removeEventListener("pointermove", onMove)
-  }, [])
-
-  useEffect(() => {
-    const el = box.current
-    if (!el) return
-    gsap.to(el, {
-      autoAlpha: active ? 1 : 0,
-      scale: active ? 1 : 0.85,
-      duration: 0.45,
-      ease: "power3.out",
-      overwrite: "auto",
-    })
-  }, [active])
-
-  return (
-    <div
-      ref={box}
-      aria-hidden
-      className="pointer-events-none invisible fixed top-0 left-0 z-30 -mt-[130px] -ml-[210px] h-[262px] w-[420px] overflow-hidden border border-line opacity-0"
-    >
-      {projects.map((p) => (
-        <img
-          key={p.slug}
-          src={shots(p)[0]}
-          alt=""
-          className={`absolute inset-0 size-full object-cover object-top grayscale transition-opacity duration-300 ${
-            active?.slug === p.slug ? "opacity-100" : "opacity-0"
-          }`}
-        />
-      ))}
-    </div>
-  )
-}
 
 function Case({ project }: { project: Project }) {
   return (
@@ -170,40 +121,57 @@ export function Projects() {
         </div>
 
         <ul className="border-t border-line" onPointerLeave={() => setHover(null)}>
-          {projects.map((p) => (
-            <li key={p.slug} data-reveal className="border-b border-line">
-              <button
-                type="button"
-                aria-haspopup="dialog"
-                onPointerEnter={() => desktop && setHover(p)}
-                onClick={(e) => openCase(p, e.currentTarget)}
-                className="group grid w-full grid-cols-[auto_1fr] items-baseline gap-x-6 py-8 text-left md:grid-cols-[64px_1fr_auto] md:py-10"
-              >
-                <span className="font-mono text-[13px] text-muted">{p.index}</span>
-                <span className="font-serif text-[clamp(56px,10vw,150px)] leading-[0.9] tracking-[-0.02em] transition-[translate,font-style] duration-500 group-hover:translate-x-3 group-hover:italic">
-                  {p.name}
-                </span>
-                <span className="col-span-2 mt-4 flex flex-col gap-2 md:col-span-1 md:mt-0 md:items-end md:text-right">
-                  <span className="text-[17px] text-foreground/90">{p.summary}</span>
-                  <span className="font-mono text-[12px] tracking-[0.14em] text-muted uppercase">
-                    {p.tag} · ver caso →
+          {projects.map((p) => {
+            const expanded = !desktop || hover?.slug === p.slug
+            return (
+              <li key={p.slug} data-reveal className="border-b border-line">
+                <button
+                  type="button"
+                  aria-haspopup="dialog"
+                  onPointerEnter={() => desktop && setHover(p)}
+                  onFocus={() => desktop && setHover(p)}
+                  onClick={(e) => openCase(p, e.currentTarget)}
+                  className="block w-full py-8 text-left md:py-10"
+                >
+                  <span className="grid grid-cols-[auto_1fr] items-baseline gap-x-6 md:grid-cols-[64px_1fr_auto]">
+                    <span className="font-mono text-[13px] text-muted">{p.index}</span>
+                    <span
+                      className={`font-serif text-[clamp(56px,10vw,150px)] leading-[0.9] tracking-[-0.02em] transition-[translate] duration-500 ${
+                        expanded && desktop ? "translate-x-3 italic" : ""
+                      }`}
+                    >
+                      {p.name}
+                    </span>
+                    <span className="col-span-2 mt-4 flex flex-col gap-2 md:col-span-1 md:mt-0 md:items-end md:text-right">
+                      <span className="text-[17px] text-foreground/90">{p.summary}</span>
+                      <span className="font-mono text-[12px] tracking-[0.14em] text-muted uppercase">
+                        {p.tag} · ver caso →
+                      </span>
+                    </span>
                   </span>
-                </span>
-                {!desktop && (
-                  <img
-                    src={shots(p)[0]}
-                    alt=""
-                    loading="lazy"
-                    className="col-span-2 mt-6 w-full border border-line grayscale"
-                  />
-                )}
-              </button>
-            </li>
-          ))}
+                  <span
+                    className={`grid transition-[grid-template-rows] duration-700 ease-[cubic-bezier(.2,.8,.2,1)] motion-reduce:transition-none ${
+                      expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                    }`}
+                  >
+                    <span className="block overflow-hidden">
+                      <span className="mt-8 block aspect-[16/10] overflow-hidden border border-line md:mt-10 md:ml-[88px] md:aspect-[16/6]">
+                        <img
+                          src={cover(p)}
+                          alt={`${p.name}, tela principal`}
+                          className={`size-full object-cover object-top transition-transform duration-[1200ms] ease-out ${
+                            expanded ? "scale-100" : "scale-105"
+                          }`}
+                        />
+                      </span>
+                    </span>
+                  </span>
+                </button>
+              </li>
+            )
+          })}
         </ul>
       </div>
-
-      {desktop && <Preview active={hover} />}
 
       <Sheet
         open={open !== null}

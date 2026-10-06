@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 import { edgeLabel, type ArchEdge, type ArchNode, type Architecture, type EdgeKind } from "@/data/architecture"
+import { useDesktop } from "@/hooks/useDesktop"
 
 const STROKE: Record<EdgeKind, { dash?: string; width: number; base: number }> = {
   route: { width: 1, base: 0.22 },
@@ -121,7 +122,123 @@ function Node({ node, state, onEnter }: { node: ArchNode; state: "on" | "near" |
   )
 }
 
+const OUT: Record<EdgeKind, string> = {
+  route: "encaminha para",
+  sync: "chama",
+  event: "publica em",
+  queue: "enfileira em",
+  dep: "depende de",
+  uses: "usa",
+}
+
+const IN: Record<EdgeKind, string> = {
+  route: "recebe de",
+  sync: "é chamado por",
+  event: "recebe eventos de",
+  queue: "recebe de",
+  dep: "é usado por",
+  uses: "é usado por",
+}
+
+function relations(id: string, arch: Architecture, nodes: Map<string, ArchNode>) {
+  const name = (n: string) => (n === "box" ? "a aplicação" : (nodes.get(n)?.label ?? n))
+  const infra = (n: string) => n !== "box" && nodes.get(n)?.kind !== "service" && nodes.get(n)?.kind !== "module"
+  const groups = new Map<string, string[]>()
+  const add = (verb: string, n: string) => groups.set(verb, [...(groups.get(verb) ?? []), name(n)])
+  arch.edges.forEach((e) => {
+    if (e.from === id) {
+      const verb =
+        e.kind === "event" && e.both
+          ? "publica e consome em"
+          : (e.kind === "event" || e.kind === "queue") && infra(id)
+            ? "entrega para"
+            : OUT[e.kind]
+      add(verb, e.to)
+    }
+    if (e.to === id) {
+      const verb =
+        e.kind === "event" && e.both
+          ? "troca eventos com"
+          : (e.kind === "event" || e.kind === "queue") && infra(e.from)
+            ? "consome de"
+            : IN[e.kind]
+      add(verb, e.from)
+    }
+  })
+  return [...groups.entries()]
+}
+
+function ArchitectureList({ arch }: { arch: Architecture }) {
+  const [open, setOpen] = useState<string | null>(null)
+  const nodes = useMemo(() => new Map(arch.nodes.map((n) => [n.id, n])), [arch])
+
+  return (
+    <div className="flex flex-col gap-10">
+      {arch.layers.map((layer) => (
+        <div key={layer.label}>
+          <p className="mb-3 font-mono text-[11px] tracking-[0.14em] text-muted uppercase">{layer.label}</p>
+          <ul className="border-t border-line">
+            {layer.ids.map((id) => {
+              const n = nodes.get(id)
+              if (!n) return null
+              const on = open === id
+              const filled = n.kind === "service" || n.kind === "module"
+              const panel = `arq-${id}`
+              return (
+                <li key={id} className="border-b border-line">
+                  <button
+                    type="button"
+                    aria-expanded={on}
+                    aria-controls={panel}
+                    onClick={() => setOpen(on ? null : id)}
+                    className="flex w-full items-center gap-3 py-4 text-left"
+                  >
+                    <span
+                      className={`size-2 shrink-0 rounded-full border border-foreground ${
+                        filled ? "bg-foreground" : n.kind === "external" ? "border-dashed" : ""
+                      }`}
+                    />
+                    <span className="flex-1 text-[17px] text-foreground">{n.label}</span>
+                    {n.sub && <span className="font-mono text-[11px] text-muted">{n.sub}</span>}
+                    <span className="w-3 text-right font-mono text-[13px] text-muted">{on ? "−" : "+"}</span>
+                  </button>
+                  <div
+                    id={panel}
+                    inert={!on}
+                    className={`grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(.2,.8,.2,1)] motion-reduce:transition-none ${
+                      on ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                    }`}
+                  >
+                    <div className="overflow-hidden">
+                      <div className="pb-5 pl-5">
+                        <p className="text-[15px] leading-[1.6] text-foreground/90">{n.desc}</p>
+                        <dl className="mt-4 flex flex-col gap-2">
+                          {relations(id, arch, nodes).map(([verb, names]) => (
+                            <div key={verb} className="flex flex-wrap gap-x-2 text-[14px] leading-snug">
+                              <dt className="text-muted">{verb}</dt>
+                              <dd className="text-foreground/90">{names.join(", ")}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export function ArchitectureDiagram({ arch }: { arch: Architecture }) {
+  const desktop = useDesktop()
+  return desktop ? <Diagram arch={arch} /> : <ArchitectureList arch={arch} />
+}
+
+function Diagram({ arch }: { arch: Architecture }) {
   const [active, setActive] = useState<string | null>(null)
   const nodes = useMemo(() => new Map(arch.nodes.map((n) => [n.id, n])), [arch])
   const touches = (e: ArchEdge, id: string) => e.from === id || e.to === id
@@ -139,9 +256,8 @@ export function ArchitectureDiagram({ arch }: { arch: Architecture }) {
 
   return (
     <div>
-      <p className="mb-3 font-mono text-[11px] tracking-[0.14em] text-muted uppercase md:hidden">arraste para o lado →</p>
-      <div className="thin-scrollbar -mx-5 overflow-x-auto px-5 md:mx-0 md:px-0" onPointerLeave={() => setActive(null)}>
-        <svg viewBox={`0 0 ${arch.width} ${arch.height}`} className="block w-full min-w-[760px]" role="img" aria-label={arch.caption}>
+      <div onPointerLeave={() => setActive(null)}>
+        <svg viewBox={`0 0 ${arch.width} ${arch.height}`} className="block w-full" role="img" aria-label={arch.caption}>
           <defs>
             <marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
               <path d="M0,0 L8,4 L0,8 z" fill="var(--foreground)" fillOpacity={0.7} />

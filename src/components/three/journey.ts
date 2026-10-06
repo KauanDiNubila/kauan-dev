@@ -15,14 +15,6 @@ export const JOURNEY: Keyframe[] = [
   { id: "contato", pos: [0, 1.2, -4], rot: [1.15, 0, 0.25], scale: 0.55, opacity: 1 },
 ]
 
-export const HERO_STATIC: Keyframe = {
-  id: "top",
-  pos: [0, 1.6, 0],
-  rot: [1.08, 0, -0.42],
-  scale: 0.56,
-  opacity: 1,
-}
-
 const ease = (t: number) => t * t * (3 - 2 * t)
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 

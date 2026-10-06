@@ -8,6 +8,7 @@ export type Architecture = {
   height: number
   caption: string
   box?: { x: number; y: number; w: number; h: number; label: string }
+  layers: { label: string; ids: string[] }[]
   nodes: ArchNode[]
   edges: ArchEdge[]
   legend: EdgeKind[]
@@ -26,6 +27,11 @@ const lexo: Architecture = {
   width: 1000,
   height: 590,
   caption: "9 microsserviços, cada um com o próprio banco",
+  layers: [
+    { label: "Entrada", ids: ["fe", "gw", "eureka"] },
+    { label: "Serviços", ids: ["auth", "cliente", "processo", "financeiro", "ia", "auditoria", "notificacao"] },
+    { label: "Mensageria e infraestrutura", ids: ["kafka", "rabbit", "redis", "gemini"] },
+  ],
   nodes: [
     { id: "fe", label: "Front-end", sub: "app + portal do cliente", x: 500, y: 40, kind: "external", desc: "React + Vite. O app do escritório e o portal do cliente falam só com o gateway." },
     { id: "gw", label: "API Gateway", sub: ":8090", x: 500, y: 140, kind: "service", desc: "Porta de entrada única. Valida o JWT, assina a identidade com HMAC, remove headers forjados e aplica rate limit por IP no Redis." },
@@ -74,6 +80,10 @@ const astra: Architecture = {
   height: 640,
   caption: "Monólito modular: 10 módulos e nenhuma dependência circular",
   box: { x: 330, y: 20, w: 650, h: 610, label: "Spring Boot · VM Oracle Cloud" },
+  layers: [
+    { label: "Entrada e infraestrutura", ids: ["client", "cf", "vercel", "caddy", "neon", "turn", "oauth"] },
+    { label: "Módulos · Spring Boot", ids: ["tracking", "user", "learning", "github", "roadmap", "social", "chat", "call", "stats", "privacy"] },
+  ],
   nodes: [
     { id: "client", label: "Navegador · App Windows", sub: "React · Electron", x: 140, y: 50, kind: "external", desc: "Front-end em React na Vercel e um app Windows em Electron que abre o mesmo site." },
     { id: "cf", label: "Cloudflare", sub: "borda", x: 140, y: 150, kind: "infra", desc: "Proxy, HTTPS e rate limit por IP antes de qualquer requisição chegar à aplicação." },

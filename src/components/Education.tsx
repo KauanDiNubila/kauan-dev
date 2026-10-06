@@ -125,11 +125,11 @@ export function Education() {
 
   return (
     <section id="formacao" ref={ref} className="relative">
-      <div className="mx-auto max-w-[1320px] px-5 pt-40 pb-32 md:px-10">
+      <div className="mx-auto max-w-[1320px] px-5 pt-28 pb-16 md:px-10 md:pt-40 md:pb-32">
         <p data-reveal className="mb-10 font-mono text-[12px] tracking-[0.16em] text-muted uppercase">
           04 — formação
         </p>
-        <div className="mb-16 grid gap-8 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:items-end">
+        <div className="mb-12 grid gap-8 md:mb-16 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] md:items-end">
           <h2 data-reveal className="font-serif text-[clamp(44px,7vw,104px)] leading-[0.92] tracking-[-0.015em]">
             Formação e <span className="italic">cursos.</span>
           </h2>

@@ -1,13 +1,8 @@
-import { lazy, Suspense, useRef } from "react"
-import { SceneBoundary } from "@/components/three/SceneBoundary"
-import { useDesktop } from "@/hooks/useDesktop"
+import { useRef } from "react"
 import { gsap, prefersReducedMotion, SplitText, useGSAP } from "@/lib/gsap"
-
-const Galaxy = lazy(() => import("@/components/three/Galaxy"))
 
 export function Hero() {
   const root = useRef<HTMLElement>(null)
-  const desktop = useDesktop()
 
   useGSAP(
     () => {
@@ -23,14 +18,6 @@ export function Hero() {
 
   return (
     <section id="top" ref={root} className="relative h-svh min-h-[620px] overflow-hidden">
-      {!desktop && (
-        <SceneBoundary>
-          <Suspense fallback={null}>
-            <Galaxy mode="static" />
-          </Suspense>
-        </SceneBoundary>
-      )}
-
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_100%,rgba(7,7,7,0.85),transparent_60%)]" />
 
       <div className="relative mx-auto flex h-full max-w-[1320px] flex-col justify-end px-5 pb-10 md:px-10 md:pb-14">
@@ -40,7 +27,7 @@ export function Hero() {
 
         <h1
           data-hero-name
-          className="font-serif text-[clamp(64px,13vw,200px)] leading-[0.86] tracking-[-0.02em] text-foreground"
+          className="font-serif text-[clamp(84px,13vw,200px)] leading-[0.86] tracking-[-0.02em] text-foreground"
         >
           Kauan
           <br />

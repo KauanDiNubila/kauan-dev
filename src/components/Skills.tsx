@@ -137,30 +137,53 @@ function Constellation() {
   )
 }
 
+function Category({ title, skills }: { title: string; skills: Skill[] }) {
+  const [open, setOpen] = useState<Skill | null>(null)
+
+  return (
+    <div data-reveal className="border-t border-line pt-5">
+      <p className="mb-4 font-mono text-[12px] tracking-[0.14em] text-muted uppercase">{title}</p>
+      <ul className="flex flex-wrap gap-2">
+        {skills.map((s) => {
+          const on = open?.name === s.name
+          return (
+            <li key={s.name}>
+              {s.used ? (
+                <button
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => setOpen(on ? null : s)}
+                  className={`flex items-center gap-2 rounded-full border px-3.5 py-2 text-[15px] transition-colors ${
+                    on ? "border-foreground bg-foreground text-background" : "border-foreground/30 text-foreground"
+                  }`}
+                >
+                  <span className={`size-1.5 rounded-full ${on ? "bg-background" : "bg-foreground shadow-[0_0_8px_rgba(237,237,233,0.8)]"}`} />
+                  {s.name}
+                </button>
+              ) : (
+                <span className="block rounded-full border border-line px-3.5 py-2 text-[15px] text-muted">{s.name}</span>
+              )}
+            </li>
+          )
+        })}
+      </ul>
+      {open && (
+        <div className="mt-4 border-l border-foreground/40 py-1 pl-4">
+          <Evidence skill={open} />
+        </div>
+      )}
+    </div>
+  )
+}
+
 function List() {
   return (
-    <div className="flex flex-col gap-12">
+    <div className="flex flex-col gap-10">
+      <p data-reveal className="text-[15px] leading-relaxed text-muted">
+        Toque nas tecnologias com ponto para ver onde foram usadas nos projetos.
+      </p>
       {categories.map((cat) => (
-        <div key={cat.title} data-reveal>
-          <p className="mb-4 font-mono text-[12px] tracking-[0.14em] text-muted uppercase">{cat.title}</p>
-          <ul className="border-t border-line">
-            {cat.skills.map((s) => (
-              <li key={s.name} className="border-b border-line py-4">
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`rounded-full bg-foreground ${s.used ? "size-2 shadow-[0_0_10px_rgba(237,237,233,0.7)]" : "size-1.5 opacity-50"}`}
-                  />
-                  <span className={`text-[17px] ${s.used ? "text-foreground" : "text-muted"}`}>{s.name}</span>
-                </div>
-                {s.used && (
-                  <div className="mt-2.5 pl-5">
-                    <Evidence skill={s} />
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Category key={cat.title} title={cat.title} skills={cat.skills} />
       ))}
     </div>
   )
@@ -172,11 +195,11 @@ export function Skills() {
 
   return (
     <section id="skills" ref={ref} className="relative">
-      <div className="mx-auto max-w-[1320px] px-5 pt-40 pb-32 md:px-10">
+      <div className="mx-auto max-w-[1320px] px-5 pt-28 pb-16 md:px-10 md:pt-40 md:pb-32">
         <p data-reveal className="mb-10 font-mono text-[12px] tracking-[0.16em] text-muted uppercase">
           03 — skills
         </p>
-        <h2 data-reveal className="mb-20 font-serif text-[clamp(44px,7vw,104px)] leading-[0.92] tracking-[-0.015em]">
+        <h2 data-reveal className="mb-12 font-serif md:mb-20 text-[clamp(44px,7vw,104px)] leading-[0.92] tracking-[-0.015em]">
           Ferramentas do <span className="italic">dia a dia.</span>
         </h2>
         {desktop ? <Constellation /> : <List />}

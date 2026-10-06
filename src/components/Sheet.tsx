@@ -103,10 +103,17 @@ function Panel({
       >
         <Dialog.Title className="sr-only">{title}</Dialog.Title>
         <Dialog.Description className="sr-only">{description ?? title}</Dialog.Description>
-        <div className="sticky top-0 z-10 h-0">
+        <div
+          className={cn(
+            "pointer-events-none sticky top-0 z-10",
+            variant === "full"
+              ? "-mb-20 h-20 bg-linear-to-b from-background via-background/90 to-transparent md:mb-0 md:h-0 md:bg-none"
+              : "h-0"
+          )}
+        >
           <Dialog.Close
             aria-label="Fechar"
-            className="absolute top-5 right-5 flex size-11 items-center justify-center rounded-full border border-line bg-background/80 text-[22px] leading-none text-muted backdrop-blur-sm transition-colors hover:text-foreground md:top-7 md:right-8"
+            className="pointer-events-auto absolute top-5 right-5 flex size-11 items-center justify-center rounded-full border border-line bg-background/80 text-[22px] leading-none text-muted backdrop-blur-sm transition-colors hover:text-foreground md:top-7 md:right-8"
           >
             ×
           </Dialog.Close>

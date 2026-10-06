@@ -8,8 +8,8 @@ const links = [
 
 export function Nav() {
   return (
-    <nav className="fixed inset-x-0 top-0 z-40 bg-linear-to-b from-background via-background/80 to-transparent">
-      <div className="mx-auto flex h-20 max-w-[1320px] items-center justify-between px-5 font-mono text-[11px] tracking-[0.14em] text-foreground uppercase md:px-10">
+    <nav className="fixed inset-x-0 top-0 z-40 border-b border-line bg-background/85 backdrop-blur-md md:border-b-0 md:bg-transparent md:bg-linear-to-b md:from-background md:via-background/80 md:to-transparent md:backdrop-blur-none">
+      <div className="mx-auto flex h-14 max-w-[1320px] md:h-20 items-center justify-between px-5 font-mono text-[11px] tracking-[0.14em] text-foreground uppercase md:px-10">
         <span className="opacity-60">portfólio — 2026</span>
         <div className="hidden gap-7 md:flex">
           {links.map((l) => (

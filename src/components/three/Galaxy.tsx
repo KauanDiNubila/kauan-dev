@@ -14,7 +14,7 @@ import {
 } from "three"
 import { createGalaxy } from "@/components/three/galaxyShape"
 import { sampleHands, samplePortrait } from "@/components/three/hands"
-import { HERO_STATIC, JOURNEY, sampleJourney, type Keyframe } from "@/components/three/journey"
+import { JOURNEY, sampleJourney, type Keyframe } from "@/components/three/journey"
 import { gsap, prefersReducedMotion } from "@/lib/gsap"
 
 const VERT = `
@@ -114,8 +114,6 @@ const FRAG = `
   }
 `
 
-type Mode = "journey" | "static"
-
 const HAND_Y = 0.85
 const VISIBLE_HEIGHT = 2 * 9 * Math.tan((25 * Math.PI) / 180)
 
@@ -130,18 +128,17 @@ const smoothstep = (a: number, b: number, x: number) => {
   return t * t * (3 - 2 * t)
 }
 
-function Field({ count, mode }: { count: number; mode: Mode }) {
+function Field({ count }: { count: number }) {
   const tilt = useRef<Group>(null)
   const spin = useRef<Group>(null)
   const material = useRef<ShaderMaterial>(null)
-  const { camera, invalidate } = useThree()
+  const { camera } = useThree()
   const pixelRatio = useThree((s) => s.viewport.dpr)
   const reduced = useMemo(() => prefersReducedMotion(), [])
-  const journey = mode === "journey"
   const pointer = useRef({ ndc: new Vector2(), inside: false })
-  const intro = useRef({ value: journey && !reduced ? 0 : 1 })
+  const intro = useRef({ value: reduced ? 1 : 0 })
   const motion = useRef({ lastY: window.scrollY, stretch: 0, scrollSpin: 0, gap: 0.2 })
-  const frame = useRef<Keyframe>({ ...HERO_STATIC, pos: [...HERO_STATIC.pos], rot: [...HERO_STATIC.rot] })
+  const frame = useRef<Keyframe>({ ...JOURNEY[0], pos: [...JOURNEY[0].pos], rot: [...JOURNEY[0].rot] })
 
   const geometry = useMemo(() => {
     const g = createGalaxy(count)
@@ -193,7 +190,6 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
   useEffect(() => () => geometry.dispose(), [geometry])
 
   useEffect(() => {
-    if (!journey) return
     let cancelled = false
     const fill = (name: string) => (points: Float32Array) => {
       if (cancelled) return
@@ -206,21 +202,17 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
     return () => {
       cancelled = true
     }
-  }, [count, geometry, journey])
+  }, [count, geometry])
 
   useEffect(() => {
-    if (intro.current.value === 1) {
-      invalidate()
-      return
-    }
+    if (intro.current.value === 1) return
     const tween = gsap.to(intro.current, { value: 1, duration: 2.8, ease: "power2.out", delay: 0.1 })
     return () => {
       tween.kill()
     }
-  }, [invalidate])
+  }, [])
 
   useEffect(() => {
-    if (!journey) return
     const onMove = (e: PointerEvent) => {
       pointer.current.ndc.set((e.clientX / window.innerWidth) * 2 - 1, -(e.clientY / window.innerHeight) * 2 + 1)
       pointer.current.inside = true
@@ -234,7 +226,7 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
       window.removeEventListener("pointermove", onMove)
       document.removeEventListener("pointerleave", onLeave)
     }
-  }, [journey])
+  }, [])
 
   useFrame((_, dt) => {
     const t = tilt.current
@@ -246,7 +238,7 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
     const y = window.scrollY
     const maxY = document.documentElement.scrollHeight - vh
 
-    const f = journey ? sampleJourney(Math.min(y, maxY), JOURNEY.map((k) => anchorOf(k.id)), vh * 1.1, frame.current) : HERO_STATIC
+    const f = sampleJourney(Math.min(y, maxY), JOURNEY.map((k) => anchorOf(k.id)), vh * 1.1, frame.current)
     t.position.set(f.pos[0], f.pos[1], f.pos[2])
     t.rotation.set(f.rot[0], f.rot[1], f.rot[2])
     t.scale.setScalar(f.scale)
@@ -254,8 +246,6 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
     m.uniforms.uIntro.value = intro.current.value
     m.uniforms.uPixelRatio.value = pixelRatio
     m.uniforms.uAngle.value = f.rot[2]
-
-    if (!journey) return
 
     const end = Math.min(anchorOf("contato"), maxY)
     const morph = Math.min(Math.max(1 - (end - y) / (vh * 0.85), 0), 1)
@@ -340,18 +330,15 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
   )
 }
 
-export default function Galaxy({ mode }: { mode: Mode }) {
-  const journey = mode === "journey"
-
+export default function Galaxy() {
   return (
-    <div aria-hidden className={`pointer-events-none inset-0 ${journey ? "fixed z-0" : "absolute"}`}>
+    <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
       <Canvas
         camera={{ position: [0, 0, 9], fov: 50 }}
         dpr={[1, 2]}
-        frameloop={journey ? "always" : "demand"}
         gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}
       >
-        <Field count={journey ? 26000 : 9000} mode={mode} />
+        <Field count={26000} />
       </Canvas>
     </div>
   )

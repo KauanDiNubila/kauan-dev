@@ -20,7 +20,7 @@ function App() {
       {desktop ? (
         <SceneBoundary>
           <Suspense fallback={null}>
-            <Galaxy mode="journey" />
+            <Galaxy />
           </Suspense>
         </SceneBoundary>
       ) : (

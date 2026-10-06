@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { categories, type Skill } from "@/data/skills"
 import { useDesktop } from "@/hooks/useDesktop"
 import { useSectionReveal } from "@/hooks/useSectionReveal"
+import { galaxyBus } from "@/lib/galaxyBus"
 
 const W = 1200
 const STEP = 52
@@ -48,6 +49,14 @@ function Evidence({ skill }: { skill: Skill }) {
 function Constellation() {
   const stars = useMemo(layout, [])
   const [active, setActive] = useState<Star | null>(null)
+  const focus = (s: Star | null, el: HTMLElement | null = null) => {
+    setActive(s)
+    galaxyBus.skillEl = el
+  }
+
+  useEffect(() => () => {
+    galaxyBus.skillEl = null
+  }, [])
 
   return (
     <div data-reveal>
@@ -55,7 +64,7 @@ function Constellation() {
         Passe o mouse numa estrela para ver onde a tecnologia foi usada. As mais brilhantes têm o uso detalhado nos
         projetos.
       </p>
-      <div className="relative w-full" style={{ aspectRatio: `${W} / ${H}` }} onPointerLeave={() => setActive(null)}>
+      <div className="relative w-full" style={{ aspectRatio: `${W} / ${H}` }} onPointerLeave={() => focus(null)}>
         <svg viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 size-full" aria-hidden>
           {stars.map((s, i) => {
             const next = stars[i + 1]
@@ -100,8 +109,8 @@ function Constellation() {
               >
                 <button
                   type="button"
-                  onPointerEnter={() => setActive(s)}
-                  onFocus={() => setActive(s)}
+                  onPointerEnter={(e) => focus(s, e.currentTarget)}
+                  onFocus={(e) => focus(s, e.currentTarget)}
                   className={`group -ml-[6px] flex items-center gap-3 py-1 pr-2 transition-opacity duration-500 ${
                     dim ? "opacity-30" : "opacity-100"
                   }`}

@@ -50,7 +50,7 @@ export async function sampleHands(count: number, url = "/hands.png") {
 }
 
 export async function samplePortrait(count: number, url = "/portrait.png") {
-  const { w, h, cdf, total } = await weights(url, 1)
+  const { w, h, cdf, total } = await weights(url, 2.2)
   const out = new Float32Array(count * 3)
   for (let n = 0; n < count; n++) {
     const i = pick(cdf, total)

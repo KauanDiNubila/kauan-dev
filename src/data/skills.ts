@@ -39,7 +39,7 @@ export const categories: Category[] = [
       { name: "Microsserviços", used: [{ project: "Lexo", text: "9 serviços independentes, cada um com banco próprio" }] },
       {
         name: "Apache Kafka",
-        used: [{ project: "Lexo", text: "eventos de domínio do cliente-service e processo-service, consumidos pelo auditoria-service" }],
+        used: [{ project: "Lexo", text: "eventos de domínio do cliente-service e processo-service, lidos pela auditoria e pelas exclusões em cascata" }],
       },
       {
         name: "RabbitMQ",

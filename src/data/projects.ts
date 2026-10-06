@@ -9,6 +9,7 @@ export type Project = {
   desc: string
   stats: { value: string; label: string }[]
   features: string[]
+  decisions: { q: string; a: string }[]
   tech: string[]
 }
 
@@ -33,6 +34,24 @@ export const projects: Project[] = [
       "Integração real com GitHub: sincroniza commits, PRs e issues via OAuth2, conectando a atividade de desenvolvimento ao progresso de estudo",
       "Infra de produção separada por peça: frontend na Vercel, backend em VM Oracle Cloud (Docker Compose + Caddy), Postgres gerenciado (Neon), Cloudflare na borda — CI no GitHub Actions e testes com Testcontainers (Postgres real)",
     ],
+    decisions: [
+      {
+        q: "Por que monólito modular?",
+        a: "Um produto com um só desenvolvedor não precisa de rede entre módulos. As fronteiras ficam no código: um módulo só conversa com outro por services públicos, e o grafo de dependências não tem ciclos.",
+      },
+      {
+        q: "Por que a sessão é a única fonte de dados?",
+        a: "Progresso, metas, streak, heatmap e ranking são calculados a partir das sessões, nunca guardados em tabela própria. Não existe número que possa ficar desatualizado em relação ao que realmente aconteceu.",
+      },
+      {
+        q: "Por que refresh token rotativo?",
+        a: "O token de acesso dura 15 minutos. O refresh token muda a cada uso; se um token já usado reaparecer, é sinal de roubo e a sessão inteira é revogada.",
+      },
+      {
+        q: "Por que uma VM na Oracle e não Render?",
+        a: "É gratuita e fica sempre ligada. No Render o app hiberna e a primeira requisição demora; na VM Always Free, com Docker Compose e Caddy, a API responde sempre.",
+      },
+    ],
     tech: ["Java 21", "Spring Boot", "PostgreSQL", "React"],
   },
   {
@@ -51,10 +70,28 @@ export const projects: Project[] = [
     ],
     features: [
       "Segurança distribuída no gateway: valida o JWT e propaga a identidade do usuário via headers assinados com HMAC, rejeitados se forjados ou reenviados fora da janela de validade. Cada serviço filtra toda query pelo tenant, isolando os dados entre organizações.",
-      "Comunicação híbrida: OpenFeign para respostas síncronas imediatas. Kafka carrega eventos de domínio publicados por cliente-service e processo-service e consumidos pelo auditoria-service; RabbitMQ processa e-mails enfileirados por auth-service e processo-service, consumidos pelo notificacao-service, com retry e Dead Letter Queue.",
+      "Comunicação híbrida: OpenFeign para respostas síncronas imediatas. Kafka carrega eventos de domínio publicados por cliente-service e processo-service: o auditoria-service registra todos, e o financeiro-service e o processo-service consomem as exclusões para apagar em cascata; RabbitMQ processa e-mails enfileirados por auth-service e processo-service, consumidos pelo notificacao-service, com retry e Dead Letter Queue.",
       "Resiliência com circuit breaker (Resilience4j), cache e rate limiting via Redis (chave por tenant) e tracing distribuído ponta a ponta com Micrometer e Zipkin.",
       "Lexo IA: resumo de processo, assistente jurídico e rascunho de petição via Google Gemini, com fallback heurístico que roda sem chave e custo zero.",
       "Portal do cliente por link mágico, sem login, com prazos e financeiro em tempo real.",
+    ],
+    decisions: [
+      {
+        q: "Por que microsserviços?",
+        a: "Para exercitar arquitetura distribuída de verdade: discovery, gateway, resiliência e observabilidade. Num produto real em estágio inicial, um monólito modular seria mais pragmático; aqui o objetivo era dominar os padrões.",
+      },
+      {
+        q: "Por que Kafka e RabbitMQ?",
+        a: "Kafka é um log de eventos durável, lido por vários consumidores: a mesma exclusão chega à auditoria, ao financeiro e ao processo. RabbitMQ é uma fila de tarefas, com retry e DLQ, para trabalho pontual como enviar um e-mail.",
+      },
+      {
+        q: "Por que validar o JWT só no gateway?",
+        a: "O token é validado uma vez, na borda. Os serviços recebem a identidade em headers assinados com HMAC e continuam simples e stateless.",
+      },
+      {
+        q: "Por que um banco por serviço?",
+        a: "Cada serviço evolui de forma independente. O custo é não ter JOIN entre domínios, resolvido com Feign quando a resposta precisa ser imediata e com eventos quando pode ser assíncrona.",
+      },
     ],
     tech: ["Java 21", "Spring Boot", "Spring Cloud", "Kafka"],
   },

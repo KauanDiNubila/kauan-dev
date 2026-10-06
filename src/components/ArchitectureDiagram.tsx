@@ -139,6 +139,7 @@ export function ArchitectureDiagram({ arch }: { arch: Architecture }) {
 
   return (
     <div>
+      <p className="mb-3 font-mono text-[11px] tracking-[0.14em] text-muted uppercase md:hidden">arraste para o lado →</p>
       <div className="thin-scrollbar -mx-5 overflow-x-auto px-5 md:mx-0 md:px-0" onPointerLeave={() => setActive(null)}>
         <svg viewBox={`0 0 ${arch.width} ${arch.height}`} className="block w-full min-w-[760px]" role="img" aria-label={arch.caption}>
           <defs>

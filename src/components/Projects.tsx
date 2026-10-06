@@ -85,6 +85,18 @@ function Case({ project }: { project: Project }) {
         </div>
       </div>
 
+      <section data-sheet-item className="mt-16">
+        <h4 className="mb-6 font-mono text-[12px] tracking-[0.14em] text-muted uppercase">Decisões</h4>
+        <dl className="grid gap-x-16 border-t border-line md:grid-cols-2">
+          {project.decisions.map((d) => (
+            <div key={d.q} className="border-b border-line py-7">
+              <dt className="font-serif text-[clamp(24px,2.4vw,30px)] leading-tight">{d.q}</dt>
+              <dd className="mt-3 text-[16px] leading-[1.65] text-foreground/90">{d.a}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
       <div className="mt-16 grid gap-4 sm:grid-cols-2">
         {shots(project).map((src, i) => (
           <img

@@ -69,7 +69,7 @@ function Constellation() {
                 x2={next.x}
                 y2={next.y}
                 stroke="currentColor"
-                className={`transition-[opacity] duration-500 ${lit ? "text-foreground/60" : "text-foreground/15"}`}
+                className={`transition-colors duration-200 ${lit ? "text-foreground/60" : "text-foreground/15"}`}
                 strokeWidth={1}
               />
             )
@@ -79,7 +79,7 @@ function Constellation() {
         {categories.map((cat, c) => (
           <p
             key={cat.title}
-            className={`absolute font-mono text-[12px] tracking-[0.14em] uppercase transition-colors duration-500 ${
+            className={`absolute font-mono text-[12px] tracking-[0.14em] uppercase transition-colors duration-200 ${
               active?.c === c ? "text-foreground" : "text-muted"
             }`}
             style={{ left: `${(COLUMNS[c] / W) * 100}%`, top: 0 }}
@@ -101,14 +101,16 @@ function Constellation() {
                 <button
                   type="button"
                   onPointerEnter={() => setActive(s)}
+                  onPointerLeave={() => setActive((cur) => (cur?.name === s.name ? null : cur))}
                   onFocus={() => setActive(s)}
-                  className={`group -ml-[6px] flex items-center gap-3 py-1 pr-2 transition-opacity duration-500 ${
+                  onBlur={() => setActive((cur) => (cur?.name === s.name ? null : cur))}
+                  className={`group -ml-[6px] flex items-center gap-3 py-1 pr-2 transition-opacity duration-200 ${
                     dim ? "opacity-30" : "opacity-100"
                   }`}
                 >
                   <span className="flex size-3 items-center justify-center">
                     <span
-                      className={`rounded-full bg-foreground transition-transform duration-300 ${
+                      className={`rounded-full bg-foreground transition-transform duration-200 ${
                         s.used ? "size-2.5 shadow-[0_0_14px_rgba(237,237,233,0.75)]" : "size-1.5 opacity-60"
                       } ${on ? "scale-150" : ""}`}
                     />

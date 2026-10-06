@@ -12,9 +12,12 @@ import {
   Vector2,
   Vector3,
 } from "three"
+import { EduStars } from "@/components/three/EduStars"
+import { createFormations } from "@/components/three/formations"
 import { createGalaxy } from "@/components/three/galaxyShape"
 import { sampleHands } from "@/components/three/hands"
 import { HERO_STATIC, JOURNEY, sampleJourney, type Keyframe } from "@/components/three/journey"
+import { galaxyBus } from "@/lib/galaxyBus"
 import { gsap, prefersReducedMotion } from "@/lib/gsap"
 
 const VERT = `
@@ -22,6 +25,9 @@ const VERT = `
   attribute float aSize;
   attribute float aShade;
   attribute vec3 aHand;
+  attribute vec3 aAstra;
+  attribute vec3 aLexo;
+  attribute float aForm;
   uniform float uTime;
   uniform float uIntro;
   uniform float uPixelRatio;
@@ -33,8 +39,15 @@ const VERT = `
   uniform float uHandW;
   uniform float uHandY;
   uniform float uGap;
+  uniform float uAstra;
+  uniform float uLexo;
+  uniform vec3 uAnchor;
+  uniform vec2 uParallax;
+  uniform vec3 uFocusPoint;
+  uniform float uFocusOn;
   varying float vShade;
   varying float vLen;
+  varying float vBoost;
 
   void main() {
     vec3 p = position;
@@ -60,17 +73,41 @@ const VERT = `
     );
     world.xyz = mix(world.xyz, hand, mk);
 
+    float sa = aForm * clamp(uAstra * 1.6 - aRandom * 0.6, 0.0, 1.0);
+    sa = sa * sa * (3.0 - 2.0 * sa);
+    float sl = aForm * clamp(uLexo * 1.6 - aRandom * 0.6, 0.0, 1.0);
+    sl = sl * sl * (3.0 - 2.0 * sl);
+    float ang = uTime * 0.15;
+    vec2 q = vec2(aLexo.x * cos(ang) - aLexo.y * sin(ang), aLexo.x * sin(ang) + aLexo.y * cos(ang));
+    world.xyz = mix(world.xyz, uAnchor + aAstra, sa);
+    world.xyz = mix(world.xyz, uAnchor + vec3(q.x, q.y * 0.62, aLexo.z), sl);
+    float h1 = fract(sin(aRandom * 311.3) * 24634.6345);
+    float h2 = fract(sin(aRandom * 912.7) * 43758.5453);
+    float sel = step(fract(sin(aRandom * 57.1) * 9631.17), 0.22);
+    float sf = aForm * sel * clamp(uFocusOn * 1.6 - aRandom * 0.6, 0.0, 1.0);
+    sf = sf * sf * (3.0 - 2.0 * sf);
+    float fa = h1 * 6.2831 + uTime * 0.25 * (0.6 + h2);
+    float fr = 0.32 + h2 * h2 * 0.5;
+    world.xyz = mix(world.xyz, uFocusPoint + vec3(cos(fa) * fr, sin(fa) * fr, (aRandom - 0.5) * 0.05), sf);
+    float fk = max(max(sa, sl), sf);
+
     vec4 mv = viewMatrix * world;
-    gl_Position = projectionMatrix * mv;
     float depth = -mv.z;
+    mv.xy += uParallax * clamp(5.0 / depth, 0.3, 2.5) * (1.0 - mk) * (1.0 - fk);
+    gl_Position = projectionMatrix * mv;
+
     float base = min(aSize * uScale * uPixelRatio / depth, 4.0 * uPixelRatio);
     base = mix(base, (1.1 + aRandom * 0.6) * uPixelRatio, mk);
-    float len = 1.0 + uStretch * 10.0 * clamp(6.0 / depth, 0.4, 2.0);
+    base = mix(base, (1.0 + aRandom * 0.9) * uPixelRatio, fk);
+    float len = 1.0 + uStretch * (1.0 - fk) * 10.0 * clamp(6.0 / depth, 0.4, 2.0);
     gl_PointSize = min(base * len, 72.0 * uPixelRatio);
     vLen = gl_PointSize / max(base, 0.0001);
     float twinkle = 0.78 + 0.22 * sin(uTime * (1.2 + aRandom * 3.0) + aRandom * 100.0);
     float shade = mix(aShade * twinkle, 0.7 + 0.2 * twinkle, mk);
+    shade = mix(shade, 0.75 + 0.25 * twinkle, max(sa, sl));
+    shade = mix(shade, 0.45 * twinkle, sf);
     vShade = shade * k * smoothstep(0.3, 1.8, depth) * mix(1.0, 0.55, uStretch);
+    vBoost = fk;
   }
 `
 
@@ -79,6 +116,7 @@ const FRAG = `
   uniform float uAngle;
   varying float vShade;
   varying float vLen;
+  varying float vBoost;
 
   void main() {
     vec2 c = gl_PointCoord - 0.5;
@@ -88,7 +126,7 @@ const FRAG = `
     float across = r.y * vLen;
     if (r.x * r.x + across * across > 0.25) discard;
     float tail = 1.0 - smoothstep(0.0, 0.5, abs(r.x)) * step(1.5, vLen) * 0.8;
-    gl_FragColor = vec4(0.93, 0.93, 0.91, vShade * uOpacity * tail);
+    gl_FragColor = vec4(0.93, 0.93, 0.91, vShade * mix(uOpacity, 0.95, vBoost) * tail);
   }
 `
 
@@ -118,7 +156,7 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
   const journey = mode === "journey"
   const pointer = useRef({ ndc: new Vector2(), inside: false })
   const intro = useRef({ value: journey && !reduced ? 0 : 1 })
-  const motion = useRef({ lastY: window.scrollY, stretch: 0, scrollSpin: 0, gap: 0.2 })
+  const motion = useRef({ lastY: window.scrollY, stretch: 0, scrollSpin: 0, gap: 0.2, push: 0 })
   const frame = useRef<Keyframe>({ ...HERO_STATIC, pos: [...HERO_STATIC.pos], rot: [...HERO_STATIC.rot] })
 
   const geometry = useMemo(() => {
@@ -129,6 +167,10 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
     geo.setAttribute("aSize", new BufferAttribute(g.size, 1))
     geo.setAttribute("aShade", new BufferAttribute(g.shade, 1))
     geo.setAttribute("aHand", new BufferAttribute(new Float32Array(count * 3), 3))
+    const f = createFormations(count)
+    geo.setAttribute("aAstra", new BufferAttribute(f.astra, 3))
+    geo.setAttribute("aLexo", new BufferAttribute(f.lexo, 3))
+    geo.setAttribute("aForm", new BufferAttribute(f.form, 1))
     return geo
   }, [count])
 
@@ -147,6 +189,12 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
       uHandW: { value: 10 },
       uHandY: { value: HAND_Y },
       uGap: { value: 0.2 },
+      uAstra: { value: 0 },
+      uLexo: { value: 0 },
+      uAnchor: { value: new Vector3() },
+      uParallax: { value: new Vector2() },
+      uFocusPoint: { value: new Vector3() },
+      uFocusOn: { value: 0 },
     }),
     []
   )
@@ -237,7 +285,8 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
     m.uniforms.uHandW.value = Math.min(VISIBLE_HEIGHT * aspect * 0.98, 15)
 
     const mo = motion.current
-    const velocity = Math.abs(y - mo.lastY) / vh / Math.max(step, 0.001)
+    const signed = (y - mo.lastY) / vh / Math.max(step, 0.001)
+    const velocity = Math.abs(signed)
     mo.scrollSpin += ((y - mo.lastY) / vh) * 0.35
     mo.lastY = y
     const stretchTarget = reduced ? 0 : Math.min(Math.max(velocity - 0.4, 0) * 0.45, 1) * (1 - morph)
@@ -257,6 +306,39 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
     const gapTarget = 0.2 * (1 - closeness) - 0.04 * closeness
     mo.gap += (gapTarget - mo.gap) * (1 - Math.exp(-step * 2.5))
     m.uniforms.uGap.value = mo.gap
+
+    const ease = (rate: number) => 1 - Math.exp(-step * rate)
+    const u = m.uniforms
+    mo.push += ((reduced ? 0 : Math.max(Math.min(signed, 3), -3) * 0.12) - mo.push) * ease(4)
+    const px = pointer.current.inside && !reduced ? pointer.current.ndc.x * 0.22 : 0
+    const py = (pointer.current.inside && !reduced ? pointer.current.ndc.y * 0.14 : 0) + mo.push
+    u.uParallax.value.x += (px - u.uParallax.value.x) * ease(3)
+    u.uParallax.value.y += (py - u.uParallax.value.y) * ease(3)
+
+    const halfH = VISIBLE_HEIGHT / 2
+    const el = galaxyBus.projectEl
+    const project = el ? galaxyBus.project : null
+    if (el) {
+      const r = el.getBoundingClientRect()
+      const cy = r.top + Math.min(r.height, 260) / 2
+      u.uAnchor.value.set(0, -((cy / vh) * 2 - 1) * halfH, 0)
+    }
+    u.uAstra.value += ((project === "astra" ? 1 : 0) - u.uAstra.value) * ease(project === "astra" ? 2.2 : 3.5)
+    u.uLexo.value += ((project === "lexo" ? 1 : 0) - u.uLexo.value) * ease(project === "lexo" ? 2.2 : 3.5)
+
+    const skill = galaxyBus.skillEl
+    if (skill) {
+      const r = skill.getBoundingClientRect()
+      const fx = (((r.left + 6) / window.innerWidth) * 2 - 1) * halfH * aspect
+      const fy = -(((r.top + r.height / 2) / vh) * 2 - 1) * halfH
+      const fp = u.uFocusPoint.value
+      if (u.uFocusOn.value < 0.05) fp.set(fx, fy, 0)
+      else {
+        fp.x += (fx - fp.x) * ease(8)
+        fp.y += (fy - fp.y) * ease(8)
+      }
+    }
+    u.uFocusOn.value += ((skill ? 1 : 0) - u.uFocusOn.value) * ease(skill ? 3 : 4)
 
     const heroWeight = 1 - Math.min(y / vh, 1)
     let target = 0
@@ -306,6 +388,7 @@ export default function Galaxy({ mode }: { mode: Mode }) {
         gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}
       >
         <Field count={journey ? 26000 : 9000} mode={mode} />
+        {journey && <EduStars />}
       </Canvas>
     </div>
   )

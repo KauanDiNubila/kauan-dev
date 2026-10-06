@@ -1,6 +1,6 @@
 import { useRef, useState } from "react"
 import { Sheet } from "@/components/Sheet"
-import { cover, projects, shots, type Project } from "@/data/projects"
+import { projects, shots, type Project } from "@/data/projects"
 import { useDesktop } from "@/hooks/useDesktop"
 import { useSectionReveal } from "@/hooks/useSectionReveal"
 
@@ -122,7 +122,7 @@ export function Projects() {
 
         <ul className="border-t border-line" onPointerLeave={() => setHover(null)}>
           {projects.map((p) => {
-            const expanded = !desktop || hover?.slug === p.slug
+            const active = desktop && hover?.slug === p.slug
             return (
               <li key={p.slug} data-reveal className="border-b border-line">
                 <button
@@ -137,7 +137,7 @@ export function Projects() {
                     <span className="font-mono text-[13px] text-muted">{p.index}</span>
                     <span
                       className={`font-serif text-[clamp(56px,10vw,150px)] leading-[0.9] tracking-[-0.02em] transition-[translate] duration-500 ${
-                        expanded && desktop ? "translate-x-3 italic" : ""
+                        active ? "translate-x-3 italic" : ""
                       }`}
                     >
                       {p.name}
@@ -146,23 +146,6 @@ export function Projects() {
                       <span className="text-[17px] text-foreground/90">{p.summary}</span>
                       <span className="font-mono text-[12px] tracking-[0.14em] text-muted uppercase">
                         {p.tag} · ver caso →
-                      </span>
-                    </span>
-                  </span>
-                  <span
-                    className={`grid transition-[grid-template-rows] duration-700 ease-[cubic-bezier(.2,.8,.2,1)] motion-reduce:transition-none ${
-                      expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-                    }`}
-                  >
-                    <span className="block overflow-hidden">
-                      <span className="mt-8 block aspect-[16/10] overflow-hidden border border-line md:mt-10 md:ml-[88px] md:aspect-[16/6]">
-                        <img
-                          src={cover(p)}
-                          alt={`${p.name}, tela principal`}
-                          className={`size-full object-cover object-top transition-transform duration-[1200ms] ease-out ${
-                            expanded ? "scale-100" : "scale-105"
-                          }`}
-                        />
                       </span>
                     </span>
                   </span>

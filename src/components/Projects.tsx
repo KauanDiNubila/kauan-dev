@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { ArchitectureDiagram } from "@/components/ArchitectureDiagram"
 import { Sheet } from "@/components/Sheet"
 import { architectures } from "@/data/architecture"
 import { projects, shots, type Project } from "@/data/projects"
 import { useDesktop } from "@/hooks/useDesktop"
-import { galaxyBus } from "@/lib/galaxyBus"
 import { useSectionReveal } from "@/hooks/useSectionReveal"
 
 function Case({ project }: { project: Project }) {
@@ -122,18 +121,8 @@ export function Projects() {
   const [shown, setShown] = useState<Project>(projects[0])
   const opener = useRef<HTMLButtonElement | null>(null)
 
-  const focus = (p: Project | null, el: HTMLElement | null = null) => {
-    setHover(p)
-    galaxyBus.project = p?.slug ?? null
-    galaxyBus.projectEl = el
-  }
-
-  useEffect(() => () => focus(null), [])
-
   const openCase = (p: Project, el: HTMLButtonElement) => {
     opener.current = el
-    galaxyBus.project = null
-    galaxyBus.projectEl = null
     setShown(p)
     setOpen(p)
     setHover(null)
@@ -155,7 +144,7 @@ export function Projects() {
           </p>
         </div>
 
-        <ul className="border-t border-line" onPointerLeave={() => focus(null)}>
+        <ul className="border-t border-line" onPointerLeave={() => setHover(null)}>
           {projects.map((p) => {
             const active = desktop && hover?.slug === p.slug
             return (
@@ -163,9 +152,8 @@ export function Projects() {
                 <button
                   type="button"
                   aria-haspopup="dialog"
-                  onPointerEnter={(e) => desktop && focus(p, e.currentTarget)}
-                  onFocus={(e) => desktop && focus(p, e.currentTarget)}
-                  onBlur={() => focus(null)}
+                  onPointerEnter={() => desktop && setHover(p)}
+                  onFocus={() => desktop && setHover(p)}
                   onClick={(e) => openCase(p, e.currentTarget)}
                   className="block w-full py-8 text-left md:py-10"
                 >

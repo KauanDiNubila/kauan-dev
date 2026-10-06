@@ -37,7 +37,7 @@ export function Hero() {
 
       <div className="relative mx-auto flex h-full max-w-[1320px] flex-col justify-end px-5 pb-10 md:px-10 md:pb-14">
         <p data-hero-fade className="mb-5 font-mono text-[11px] tracking-[0.18em] text-muted uppercase">
-          // desenvolvedor back-end
+          Desenvolvedor back-end
         </p>
 
         <h1

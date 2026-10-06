@@ -11,7 +11,6 @@ const facts = [
 ]
 
 const paragraphs = [
-  "Meu nome é Kauan Di Nubila, tenho 20 anos e sou estudante de Análise e Desenvolvimento de Sistemas, com foco em desenvolvimento Back-end com Java e Spring Boot. Tenho construído aplicações completas, desde a modelagem e desenvolvimento das APIs até testes, segurança, infraestrutura e deploy em produção.",
   "Meu foco está no desenvolvimento de sistemas bem estruturados, com atenção a arquitetura, segurança, integração entre serviços e qualidade de código. Nos meus projetos, tenho explorado tanto arquiteturas modulares quanto microserviços, além de tecnologias como mensageria, comunicação em tempo real e cloud.",
   "Atualmente, busco minha primeira oportunidade profissional na área, onde possa aplicar o que venho construindo na prática, aprender com um time experiente e evoluir junto com projetos reais.",
 ]

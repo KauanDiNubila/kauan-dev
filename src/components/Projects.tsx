@@ -40,14 +40,16 @@ function Case({ project }: { project: Project }) {
         </a>
       </div>
 
-      <dl data-sheet-item className="mt-16 grid gap-px border-y border-line sm:grid-cols-3">
-        {project.stats.map((s) => (
-          <div key={s.label} className="py-7 sm:pr-6">
-            <dt className="font-serif text-[64px] leading-none">{s.value}</dt>
-            <dd className="mt-3 max-w-[220px] text-[15px] leading-snug text-muted">{s.label}</dd>
-          </div>
-        ))}
-      </dl>
+      <div data-sheet-item className="mt-14 grid gap-8 border-t border-line pt-8 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] md:gap-16">
+        <p className="max-w-[620px] text-[18px] leading-[1.65] text-foreground/90">{project.desc}</p>
+        <ul className="flex flex-wrap content-start gap-2 md:justify-end">
+          {project.tech.map((t) => (
+            <li key={t} className="rounded-full border border-line px-3.5 py-1.5 text-[14px] text-foreground/90">
+              {t}
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {architectures[project.slug] && (
         <section data-sheet-item className="mt-16">
@@ -59,39 +61,25 @@ function Case({ project }: { project: Project }) {
         </section>
       )}
 
-      <div className="mt-16 grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:gap-16">
-        <div data-sheet-item>
-          <h4 className="mb-4 font-mono text-[12px] tracking-[0.14em] text-muted uppercase">Sobre o projeto</h4>
-          <p className="text-[17px] leading-[1.7] text-foreground/90">{project.desc}</p>
-          <h4 className="mt-10 mb-4 font-mono text-[12px] tracking-[0.14em] text-muted uppercase">Stack</h4>
-          <ul className="flex flex-wrap gap-2">
-            {project.tech.map((t) => (
-              <li key={t} className="rounded-full border border-line px-3.5 py-1.5 text-[14px] text-foreground/90">
-                {t}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div data-sheet-item>
-          <h4 className="mb-4 font-mono text-[12px] tracking-[0.14em] text-muted uppercase">Destaques</h4>
-          <ol className="border-t border-line">
-            {project.features.map((f, i) => (
-              <li key={f} className="grid grid-cols-[36px_1fr] gap-3 border-b border-line py-5">
-                <span className="pt-1 font-mono text-[12px] text-muted">{String(i + 1).padStart(2, "0")}</span>
-                <p className="text-[16px] leading-[1.65] text-foreground/90">{f}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </div>
-
       <section data-sheet-item className="mt-16">
+        <h4 className="mb-6 font-mono text-[12px] tracking-[0.14em] text-muted uppercase">Destaques</h4>
+        <ol className="grid gap-x-10 border-t border-line md:grid-cols-3">
+          {project.features.map((f, i) => (
+            <li key={f} className="flex gap-3 border-b border-line py-5 md:border-b-0">
+              <span className="pt-1 font-mono text-[12px] text-muted">{String(i + 1).padStart(2, "0")}</span>
+              <p className="text-[16px] leading-[1.6] text-foreground/90">{f}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section data-sheet-item className="mt-14">
         <h4 className="mb-6 font-mono text-[12px] tracking-[0.14em] text-muted uppercase">Decisões</h4>
-        <dl className="grid gap-x-16 border-t border-line md:grid-cols-2">
+        <dl className="grid gap-x-10 border-t border-line md:grid-cols-3">
           {project.decisions.map((d) => (
-            <div key={d.q} className="border-b border-line py-7">
-              <dt className="font-serif text-[clamp(24px,2.4vw,30px)] leading-tight">{d.q}</dt>
-              <dd className="mt-3 text-[16px] leading-[1.65] text-foreground/90">{d.a}</dd>
+            <div key={d.q} className="border-b border-line py-6 md:border-b-0">
+              <dt className="font-serif text-[clamp(22px,2vw,27px)] leading-tight">{d.q}</dt>
+              <dd className="mt-3 text-[15px] leading-[1.65] text-foreground/85">{d.a}</dd>
             </div>
           ))}
         </dl>

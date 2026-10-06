@@ -75,4 +75,6 @@ export const projects: Project[] = [
   },
 ]
 
-export const shots = (p: Project) => [2, 3].map((n) => `/images/${p.slug}/${n}.png`)
+const SHOTS: Record<string, number[]> = { astra: [2, 3], lexo: [1, 2] }
+
+export const shots = (p: Project) => (SHOTS[p.slug] ?? [1, 2]).map((n) => `/images/${p.slug}/${n}.png`)

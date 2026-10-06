@@ -6,6 +6,7 @@ const facts = [
   { label: "Formação", value: "Análise e Desenvolvimento de Sistemas" },
   { label: "Foco", value: "Back-end com Java e Spring Boot" },
   { label: "Explorando", value: "Microsserviços, mensageria, tempo real e cloud" },
+  { label: "Inglês", value: "Avançado" },
 ]
 
 const paragraphs = [

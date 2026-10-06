@@ -1,5 +1,7 @@
 import { useRef, useState } from "react"
+import { ArchitectureDiagram } from "@/components/ArchitectureDiagram"
 import { Sheet } from "@/components/Sheet"
+import { architectures } from "@/data/architecture"
 import { projects, shots, type Project } from "@/data/projects"
 import { useDesktop } from "@/hooks/useDesktop"
 import { useSectionReveal } from "@/hooks/useSectionReveal"
@@ -46,6 +48,16 @@ function Case({ project }: { project: Project }) {
           </div>
         ))}
       </dl>
+
+      {architectures[project.slug] && (
+        <section data-sheet-item className="mt-16">
+          <div className="mb-8 flex flex-wrap items-baseline justify-between gap-3">
+            <h4 className="font-mono text-[12px] tracking-[0.14em] text-muted uppercase">Arquitetura</h4>
+            <p className="text-[15px] text-muted">{architectures[project.slug].caption}</p>
+          </div>
+          <ArchitectureDiagram arch={architectures[project.slug]} />
+        </section>
+      )}
 
       <div className="mt-16 grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:gap-16">
         <div data-sheet-item>

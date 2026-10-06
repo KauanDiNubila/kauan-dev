@@ -168,7 +168,7 @@ export function Education() {
                     {fmt(startOf(e))}
                   </span>
                   <span className="relative col-start-1 row-span-2 row-start-1 flex justify-center pt-2 md:col-start-2 md:row-span-1">
-                    <span data-edu-dot className="size-[11px] rounded-full border border-foreground/60 bg-background transition-colors duration-300 group-hover:bg-foreground" />
+                    <span className="size-[11px] rounded-full border border-foreground/60 bg-background transition-colors duration-300 group-hover:bg-foreground" />
                   </span>
                   <span className="col-start-2 md:col-start-3">
                     <span className="block text-[19px] leading-snug text-foreground transition-transform duration-300 group-hover:translate-x-1">

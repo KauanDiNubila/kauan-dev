@@ -12,7 +12,6 @@ import {
   Vector2,
   Vector3,
 } from "three"
-import { EduStars } from "@/components/three/EduStars"
 import { createFormations } from "@/components/three/formations"
 import { createGalaxy } from "@/components/three/galaxyShape"
 import { sampleHands } from "@/components/three/hands"
@@ -43,8 +42,6 @@ const VERT = `
   uniform float uLexo;
   uniform vec3 uAnchor;
   uniform vec2 uParallax;
-  uniform vec3 uFocusPoint;
-  uniform float uFocusOn;
   varying float vShade;
   varying float vLen;
   varying float vBoost;
@@ -81,15 +78,7 @@ const VERT = `
     vec2 q = vec2(aLexo.x * cos(ang) - aLexo.y * sin(ang), aLexo.x * sin(ang) + aLexo.y * cos(ang));
     world.xyz = mix(world.xyz, uAnchor + aAstra, sa);
     world.xyz = mix(world.xyz, uAnchor + vec3(q.x, q.y * 0.62, aLexo.z), sl);
-    float h1 = fract(sin(aRandom * 311.3) * 24634.6345);
-    float h2 = fract(sin(aRandom * 912.7) * 43758.5453);
-    float sel = step(fract(sin(aRandom * 57.1) * 9631.17), 0.22);
-    float sf = aForm * sel * clamp(uFocusOn * 1.6 - aRandom * 0.6, 0.0, 1.0);
-    sf = sf * sf * (3.0 - 2.0 * sf);
-    float fa = h1 * 6.2831 + uTime * 0.25 * (0.6 + h2);
-    float fr = 0.32 + h2 * h2 * 0.5;
-    world.xyz = mix(world.xyz, uFocusPoint + vec3(cos(fa) * fr, sin(fa) * fr, (aRandom - 0.5) * 0.05), sf);
-    float fk = max(max(sa, sl), sf);
+    float fk = max(sa, sl);
 
     vec4 mv = viewMatrix * world;
     float depth = -mv.z;
@@ -104,8 +93,7 @@ const VERT = `
     vLen = gl_PointSize / max(base, 0.0001);
     float twinkle = 0.78 + 0.22 * sin(uTime * (1.2 + aRandom * 3.0) + aRandom * 100.0);
     float shade = mix(aShade * twinkle, 0.7 + 0.2 * twinkle, mk);
-    shade = mix(shade, 0.75 + 0.25 * twinkle, max(sa, sl));
-    shade = mix(shade, 0.45 * twinkle, sf);
+    shade = mix(shade, 0.75 + 0.25 * twinkle, fk);
     vShade = shade * k * smoothstep(0.3, 1.8, depth) * mix(1.0, 0.55, uStretch);
     vBoost = fk;
   }
@@ -193,8 +181,6 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
       uLexo: { value: 0 },
       uAnchor: { value: new Vector3() },
       uParallax: { value: new Vector2() },
-      uFocusPoint: { value: new Vector3() },
-      uFocusOn: { value: 0 },
     }),
     []
   )
@@ -326,20 +312,6 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
     u.uAstra.value += ((project === "astra" ? 1 : 0) - u.uAstra.value) * ease(project === "astra" ? 2.2 : 3.5)
     u.uLexo.value += ((project === "lexo" ? 1 : 0) - u.uLexo.value) * ease(project === "lexo" ? 2.2 : 3.5)
 
-    const skill = galaxyBus.skillEl
-    if (skill) {
-      const r = skill.getBoundingClientRect()
-      const fx = (((r.left + 6) / window.innerWidth) * 2 - 1) * halfH * aspect
-      const fy = -(((r.top + r.height / 2) / vh) * 2 - 1) * halfH
-      const fp = u.uFocusPoint.value
-      if (u.uFocusOn.value < 0.05) fp.set(fx, fy, 0)
-      else {
-        fp.x += (fx - fp.x) * ease(8)
-        fp.y += (fy - fp.y) * ease(8)
-      }
-    }
-    u.uFocusOn.value += ((skill ? 1 : 0) - u.uFocusOn.value) * ease(skill ? 3 : 4)
-
     const heroWeight = 1 - Math.min(y / vh, 1)
     let target = 0
     if (pointer.current.inside && heroWeight > 0) {
@@ -388,7 +360,6 @@ export default function Galaxy({ mode }: { mode: Mode }) {
         gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}
       >
         <Field count={journey ? 26000 : 9000} mode={mode} />
-        {journey && <EduStars />}
       </Canvas>
     </div>
   )

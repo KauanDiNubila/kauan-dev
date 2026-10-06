@@ -10,7 +10,7 @@ export const JOURNEY: Keyframe[] = [
   { id: "top", pos: [1.5, 0.35, 0], rot: [1.08, 0, -0.42], scale: 1, opacity: 1 },
   { id: "sobre", pos: [6.5, -0.6, 1], rot: [0.14, 0, -0.32], scale: 2.3, opacity: 0.16 },
   { id: "projetos", pos: [7.5, 1.2, 0.5], rot: [0.1, 0, -0.16], scale: 2.4, opacity: 0.12 },
-  { id: "skills", pos: [7, -1.4, 1.5], rot: [-0.12, 0, -0.42], scale: 2.3, opacity: 0.18 },
+  { id: "skills", pos: [7, -1.4, 1.5], rot: [-0.12, 0, -0.42], scale: 2.3, opacity: 0.12 },
   { id: "formacao", pos: [7.5, 0.4, 1], rot: [0.16, 0, -0.26], scale: 2.3, opacity: 0.16 },
   { id: "contato", pos: [0, 1.2, -4], rot: [1.15, 0, 0.25], scale: 0.55, opacity: 1 },
 ]
@@ -26,11 +26,12 @@ export const HERO_STATIC: Keyframe = {
 const ease = (t: number) => t * t * (3 - 2 * t)
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 
-export function sampleJourney(scrollY: number, anchors: number[], out: Keyframe) {
+export function sampleJourney(scrollY: number, anchors: number[], blend: number, out: Keyframe) {
   let i = 0
   while (i < anchors.length - 2 && scrollY >= anchors[i + 1]) i++
-  const span = anchors[i + 1] - anchors[i]
-  const t = ease(span > 0 ? Math.min(Math.max((scrollY - anchors[i]) / span, 0), 1) : 1)
+  const start = Math.max(anchors[i], anchors[i + 1] - blend)
+  const span = anchors[i + 1] - start
+  const t = ease(span > 0 ? Math.min(Math.max((scrollY - start) / span, 0), 1) : 1)
   const a = JOURNEY[i]
   const b = JOURNEY[i + 1]
   for (let k = 0; k < 3; k++) {

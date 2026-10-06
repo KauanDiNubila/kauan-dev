@@ -219,7 +219,7 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
     const y = window.scrollY
     const maxY = document.documentElement.scrollHeight - vh
 
-    const f = journey ? sampleJourney(Math.min(y, maxY), JOURNEY.map((k) => anchorOf(k.id)), frame.current) : HERO_STATIC
+    const f = journey ? sampleJourney(Math.min(y, maxY), JOURNEY.map((k) => anchorOf(k.id)), vh * 1.1, frame.current) : HERO_STATIC
     t.position.set(f.pos[0], f.pos[1], f.pos[2])
     t.rotation.set(f.rot[0], f.rot[1], f.rot[2])
     t.scale.setScalar(f.scale)

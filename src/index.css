@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --color-background: var(--background);
@@ -45,6 +45,11 @@
       cursor: none !important;
     }
   }
+}
+
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(237, 237, 233, 0.25) transparent;
 }
 
 .grain {

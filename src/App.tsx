@@ -2,9 +2,11 @@ import { lazy, Suspense } from "react"
 import { About } from "@/components/About"
 import { Contact } from "@/components/Contact"
 import { Cursor } from "@/components/Cursor"
+import { Education } from "@/components/Education"
 import { Hero } from "@/components/Hero"
 import { Nav } from "@/components/Nav"
-import { Placeholder } from "@/components/Placeholder"
+import { Projects } from "@/components/Projects"
+import { Skills } from "@/components/Skills"
 import { SceneBoundary } from "@/components/three/SceneBoundary"
 import { useDesktop } from "@/hooks/useDesktop"
 
@@ -30,9 +32,9 @@ function App() {
       <main className="relative z-10">
         <Hero />
         <About />
-        <Placeholder id="projetos" n="02" label="projetos" format="índice com preview" />
-        <Placeholder id="skills" n="03" label="skills" format="constelação" />
-        <Placeholder id="formacao" n="04" label="formação" format="linha de pontos de luz" />
+        <Projects />
+        <Skills />
+        <Education />
         <Contact />
       </main>
     </div>

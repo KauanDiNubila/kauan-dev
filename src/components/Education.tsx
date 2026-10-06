@@ -134,8 +134,8 @@ export function Education() {
             Formação e <span className="italic">cursos.</span>
           </h2>
           <p data-reveal className="max-w-[460px] text-[17px] leading-[1.65] text-foreground/85">
-            Faculdade em andamento e mais de 500 horas de estudo focadas em Java, Spring Boot, mensageria, segurança e
-            DevOps.
+            Faculdade em andamento e, por fora, mais de 500 horas de cursos focados em Java, Spring Boot,
+            mensageria, segurança e DevOps.
           </p>
         </div>
 
@@ -149,32 +149,33 @@ export function Education() {
               </p>
             </div>
           ))}
-          <dl ref={counters} data-reveal className="grid grid-cols-3 gap-6 self-end">
-            {totals.map((t) => (
-              <div key={t.label}>
-                <dt className="font-serif text-[clamp(44px,5vw,72px)] leading-none">
-                  <span data-count={t.value}>{t.value}</span>
-                  {t.suffix}
-                </dt>
-                <dd className="mt-2 text-[14px] leading-snug text-muted">{t.label}</dd>
-              </div>
-            ))}
-          </dl>
+          <div data-reveal className="border-t border-line pt-10 md:border-t-0 md:border-l md:pt-0 md:pl-12">
+            <p className="mb-6 font-mono text-[12px] tracking-[0.14em] text-muted uppercase">Cursos · Alura e IBM</p>
+            <dl ref={counters} className="grid grid-cols-3 gap-6">
+              {totals.map((t) => (
+                <div key={t.label}>
+                  <dt className="font-serif text-[clamp(40px,4.4vw,64px)] leading-none">
+                    <span data-count={t.value}>{t.value}</span>
+                    {t.suffix}
+                  </dt>
+                  <dd className="mt-2 text-[14px] leading-snug text-muted">{t.label}</dd>
+                </div>
+              ))}
+            </dl>
+            <button
+              ref={opener}
+              type="button"
+              aria-haspopup="dialog"
+              onClick={() => setOpen(true)}
+              className="group mt-8 inline-flex items-center gap-3 rounded-full border border-line px-6 py-3.5 text-[15px] font-medium text-foreground transition-colors hover:border-foreground/40"
+            >
+              Ver todas as trilhas e cursos
+              <span className="text-muted transition-[color,translate] duration-300 group-hover:translate-x-0.5 group-hover:text-foreground">
+                →
+              </span>
+            </button>
+          </div>
         </div>
-
-        <button
-          data-reveal
-          ref={opener}
-          type="button"
-          aria-haspopup="dialog"
-          onClick={() => setOpen(true)}
-          className="group mt-10 inline-flex items-center gap-3 rounded-full border border-line px-6 py-3.5 text-[15px] font-medium text-foreground transition-colors hover:border-foreground/40"
-        >
-          Ver todas as trilhas e cursos
-          <span className="text-muted transition-[color,translate] duration-300 group-hover:translate-x-0.5 group-hover:text-foreground">
-            →
-          </span>
-        </button>
       </div>
 
       <Sheet

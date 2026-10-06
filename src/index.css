@@ -86,11 +86,6 @@
   100% { transform: translate(0, 0); }
 }
 
-@keyframes twinkle {
-  0%, 100% { opacity: 0.85; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.12); }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .grain { animation: none; }
 }

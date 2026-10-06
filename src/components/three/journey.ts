@@ -12,10 +12,16 @@ export const JOURNEY: Keyframe[] = [
   { id: "projetos", pos: [-5, 0.4, 0], rot: [0.1, 0, -0.28], scale: 2.4, opacity: 0.3 },
   { id: "skills", pos: [3, 0.6, 1.5], rot: [-0.12, 0, -0.4], scale: 2.3, opacity: 0.5 },
   { id: "formacao", pos: [-4, -0.3, 1], rot: [0.16, 0, -0.3], scale: 2.3, opacity: 0.45 },
-  { id: "contato", pos: [0, 1.2, -4], rot: [1.15, 0, 0.25], scale: 0.55, opacity: 0.95 },
+  { id: "contato", pos: [0, 1.2, -4], rot: [1.15, 0, 0.25], scale: 0.55, opacity: 1 },
 ]
 
-export const HERO_STATIC: Keyframe = { id: "top", pos: [0, 1.6, 0], rot: [1.08, 0, -0.42], scale: 0.56, opacity: 1 }
+export const HERO_STATIC: Keyframe = {
+  id: "top",
+  pos: [0, 1.6, 0],
+  rot: [1.08, 0, -0.42],
+  scale: 0.56,
+  opacity: 1,
+}
 
 const ease = (t: number) => t * t * (3 - 2 * t)
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t

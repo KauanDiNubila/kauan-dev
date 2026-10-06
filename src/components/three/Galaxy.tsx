@@ -1,7 +1,19 @@
 import { useEffect, useMemo, useRef } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
-import { AdditiveBlending, BufferAttribute, BufferGeometry, Group, Plane, Raycaster, ShaderMaterial, Vector2, Vector3 } from "three"
+import {
+  AdditiveBlending,
+  BufferAttribute,
+  BufferGeometry,
+  Group,
+  PerspectiveCamera,
+  Plane,
+  Raycaster,
+  ShaderMaterial,
+  Vector2,
+  Vector3,
+} from "three"
 import { createGalaxy } from "@/components/three/galaxyShape"
+import { sampleHands } from "@/components/three/hands"
 import { HERO_STATIC, JOURNEY, sampleJourney, type Keyframe } from "@/components/three/journey"
 import { gsap, prefersReducedMotion } from "@/lib/gsap"
 
@@ -9,6 +21,7 @@ const VERT = `
   attribute float aRandom;
   attribute float aSize;
   attribute float aShade;
+  attribute vec3 aHand;
   uniform float uTime;
   uniform float uIntro;
   uniform float uPixelRatio;
@@ -16,6 +29,10 @@ const VERT = `
   uniform vec3 uMouse;
   uniform float uMouseForce;
   uniform float uStretch;
+  uniform float uMorph;
+  uniform float uHandW;
+  uniform float uHandY;
+  uniform float uGap;
   varying float vShade;
   varying float vLen;
 
@@ -33,15 +50,27 @@ const VERT = `
     p.xz += (d / max(dist, 0.0001)) * f * 0.45;
     p.y += f * 0.6 * (aRandom - 0.5);
 
-    vec4 mv = modelViewMatrix * vec4(p, 1.0);
+    vec4 world = modelMatrix * vec4(p, 1.0);
+    float mk = clamp(uMorph * 1.6 - aRandom * 0.6, 0.0, 1.0);
+    mk = mk * mk * (3.0 - 2.0 * mk);
+    vec3 hand = vec3(
+      aHand.x * uHandW + aHand.z * uGap,
+      aHand.y * uHandW + uHandY + sin(uTime * 0.7 + aHand.x * 6.0) * 0.015,
+      (aRandom - 0.5) * 0.12
+    );
+    world.xyz = mix(world.xyz, hand, mk);
+
+    vec4 mv = viewMatrix * world;
     gl_Position = projectionMatrix * mv;
     float depth = -mv.z;
     float base = min(aSize * uScale * uPixelRatio / depth, 4.0 * uPixelRatio);
+    base = mix(base, (1.1 + aRandom * 0.6) * uPixelRatio, mk);
     float len = 1.0 + uStretch * 10.0 * clamp(6.0 / depth, 0.4, 2.0);
     gl_PointSize = min(base * len, 72.0 * uPixelRatio);
     vLen = gl_PointSize / max(base, 0.0001);
     float twinkle = 0.78 + 0.22 * sin(uTime * (1.2 + aRandom * 3.0) + aRandom * 100.0);
-    vShade = aShade * twinkle * k * smoothstep(0.3, 1.8, depth) * mix(1.0, 0.55, uStretch);
+    float shade = mix(aShade * twinkle, 0.7 + 0.2 * twinkle, mk);
+    vShade = shade * k * smoothstep(0.3, 1.8, depth) * mix(1.0, 0.55, uStretch);
   }
 `
 
@@ -65,10 +94,18 @@ const FRAG = `
 
 type Mode = "journey" | "static"
 
+const HAND_Y = 0.85
+const VISIBLE_HEIGHT = 2 * 9 * Math.tan((25 * Math.PI) / 180)
+
 const anchorOf = (id: string) => {
   if (id === "top") return 0
   const el = document.getElementById(id)
   return el ? el.offsetTop : 0
+}
+
+const smoothstep = (a: number, b: number, x: number) => {
+  const t = Math.min(Math.max((x - a) / (b - a), 0), 1)
+  return t * t * (3 - 2 * t)
 }
 
 function Field({ count, mode }: { count: number; mode: Mode }) {
@@ -81,7 +118,7 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
   const journey = mode === "journey"
   const pointer = useRef({ ndc: new Vector2(), inside: false })
   const intro = useRef({ value: journey && !reduced ? 0 : 1 })
-  const motion = useRef({ lastY: window.scrollY, stretch: 0, scrollSpin: 0 })
+  const motion = useRef({ lastY: window.scrollY, stretch: 0, scrollSpin: 0, gap: 0.2 })
   const frame = useRef<Keyframe>({ ...HERO_STATIC, pos: [...HERO_STATIC.pos], rot: [...HERO_STATIC.rot] })
 
   const geometry = useMemo(() => {
@@ -91,6 +128,7 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
     geo.setAttribute("aRandom", new BufferAttribute(g.random, 1))
     geo.setAttribute("aSize", new BufferAttribute(g.size, 1))
     geo.setAttribute("aShade", new BufferAttribute(g.shade, 1))
+    geo.setAttribute("aHand", new BufferAttribute(new Float32Array(count * 3), 3))
     return geo
   }, [count])
 
@@ -105,16 +143,43 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
       uMouseForce: { value: 0 },
       uStretch: { value: 0 },
       uAngle: { value: 0 },
+      uMorph: { value: 0 },
+      uHandW: { value: 10 },
+      uHandY: { value: HAND_Y },
+      uGap: { value: 0.2 },
     }),
     []
   )
 
   const ray = useMemo(
-    () => ({ caster: new Raycaster(), plane: new Plane(), normal: new Vector3(), hit: new Vector3(), origin: new Vector3() }),
+    () => ({
+      caster: new Raycaster(),
+      plane: new Plane(),
+      normal: new Vector3(),
+      hit: new Vector3(),
+      origin: new Vector3(),
+      gap: new Vector3(),
+    }),
     []
   )
 
   useEffect(() => () => geometry.dispose(), [geometry])
+
+  useEffect(() => {
+    if (!journey) return
+    let cancelled = false
+    sampleHands(count)
+      .then((points) => {
+        if (cancelled) return
+        const attr = geometry.getAttribute("aHand") as BufferAttribute
+        ;(attr.array as Float32Array).set(points)
+        attr.needsUpdate = true
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [count, geometry, journey])
 
   useEffect(() => {
     if (intro.current.value === 1) {
@@ -152,10 +217,9 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
     const step = Math.min(dt, 0.05)
     const vh = window.innerHeight
     const y = window.scrollY
+    const maxY = document.documentElement.scrollHeight - vh
 
-    const f = journey
-      ? sampleJourney(Math.min(y, document.documentElement.scrollHeight - vh), JOURNEY.map((k) => anchorOf(k.id)), frame.current)
-      : HERO_STATIC
+    const f = journey ? sampleJourney(Math.min(y, maxY), JOURNEY.map((k) => anchorOf(k.id)), frame.current) : HERO_STATIC
     t.position.set(f.pos[0], f.pos[1], f.pos[2])
     t.rotation.set(f.rot[0], f.rot[1], f.rot[2])
     t.scale.setScalar(f.scale)
@@ -166,16 +230,33 @@ function Field({ count, mode }: { count: number; mode: Mode }) {
 
     if (!journey) return
 
+    const end = Math.min(anchorOf("contato"), maxY)
+    const morph = Math.min(Math.max(1 - (end - y) / (vh * 0.85), 0), 1)
+    m.uniforms.uMorph.value = morph
+    const aspect = (camera as PerspectiveCamera).aspect
+    m.uniforms.uHandW.value = Math.min(VISIBLE_HEIGHT * aspect * 0.98, 15)
+
     const mo = motion.current
     const velocity = Math.abs(y - mo.lastY) / vh / Math.max(step, 0.001)
-    mo.scrollSpin += (y - mo.lastY) / vh * 0.35
+    mo.scrollSpin += ((y - mo.lastY) / vh) * 0.35
     mo.lastY = y
-    const stretchTarget = reduced ? 0 : Math.min(Math.max(velocity - 0.4, 0) * 0.45, 1)
+    const stretchTarget = reduced ? 0 : Math.min(Math.max(velocity - 0.4, 0) * 0.45, 1) * (1 - morph)
     mo.stretch += (stretchTarget - mo.stretch) * (1 - Math.exp(-step * (stretchTarget > mo.stretch ? 10 : 4)))
     m.uniforms.uStretch.value = mo.stretch
 
     if (!reduced) m.uniforms.uTime.value += step
     s.rotation.y = -m.uniforms.uTime.value * 0.035 - mo.scrollSpin
+
+    let closeness = 0
+    if (pointer.current.inside && morph > 0.9) {
+      ray.gap.set(0, HAND_Y, 0).project(camera)
+      const dx = ((pointer.current.ndc.x - ray.gap.x) * window.innerWidth) / 2
+      const dy = ((pointer.current.ndc.y - ray.gap.y) * vh) / 2
+      closeness = 1 - smoothstep(70, 460, Math.hypot(dx, dy))
+    }
+    const gapTarget = 0.2 * (1 - closeness) - 0.04 * closeness
+    mo.gap += (gapTarget - mo.gap) * (1 - Math.exp(-step * 2.5))
+    m.uniforms.uGap.value = mo.gap
 
     const heroWeight = 1 - Math.min(y / vh, 1)
     let target = 0

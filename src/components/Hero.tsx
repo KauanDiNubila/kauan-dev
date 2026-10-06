@@ -1,6 +1,5 @@
 import { lazy, Suspense, useRef } from "react"
 import { SceneBoundary } from "@/components/three/SceneBoundary"
-import { Star } from "@/components/Star"
 import { useDesktop } from "@/hooks/useDesktop"
 import { gsap, prefersReducedMotion, SplitText, useGSAP } from "@/lib/gsap"
 
@@ -18,7 +17,6 @@ export function Hero() {
         .timeline({ defaults: { ease: "power4.out" }, delay: 0.5 })
         .from(split.chars, { yPercent: 115, duration: 1.4, stagger: 0.03 })
         .from("[data-hero-fade]", { autoAlpha: 0, y: 14, duration: 1, stagger: 0.12 }, "-=0.9")
-        .from("[data-hero-star]", { autoAlpha: 0, scale: 0.2, duration: 1.6, ease: "expo.out" }, "-=1.2")
     },
     { scope: root }
   )
@@ -34,10 +32,6 @@ export function Hero() {
       )}
 
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_100%,rgba(7,7,7,0.85),transparent_60%)]" />
-
-      <div data-hero-star className="absolute top-[22%] left-[9%] size-[88px] md:top-[24%] md:left-[14%]">
-        <Star className="size-full" />
-      </div>
 
       <div className="relative mx-auto flex h-full max-w-[1320px] flex-col justify-end px-5 pb-10 md:px-10 md:pb-14">
         <p data-hero-fade className="mb-5 font-mono text-[11px] tracking-[0.18em] text-muted uppercase">

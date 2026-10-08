@@ -6,6 +6,7 @@ export type Project = {
   summary: string
   repo: string
   live: string
+  store?: string
   desc: string
   features: string[]
   decisions: { q: string; a: string }[]
@@ -17,12 +18,14 @@ export const projects: Project[] = [
     index: "01",
     slug: "astra",
     name: "Astra",
-    tag: "em produção",
+    tag: "em produção · Microsoft Store",
     summary: "Ecossistema de estudos e produtividade full-stack",
     repo: "https://github.com/KauanDiNubila/astra",
     live: "https://astra-app.dev",
+    store: "https://apps.microsoft.com/detail/9NRB7QNCJGSP?hl=pt-br&gl=BR",
     desc: "Plataforma de estudos e produtividade com camada social em tempo real (amigos e chat cifrado) e integração com o GitHub.",
     features: [
+      "Publicado na Microsoft Store: app para Windows aprovado na certificação da Microsoft, com chamadas de voz e vídeo e compartilhamento de tela com o som do sistema.",
       "Senha em BCrypt, com recusa de senhas vazadas, e login com Google e GitHub.",
       "Exportação de dados da LGPD montada a partir do que cada módulo expõe, sem acessar o banco dos vizinhos.",
       "Testes de integração em Postgres real, rodando no CI.",
@@ -37,11 +40,15 @@ export const projects: Project[] = [
         a: "Progresso, metas, streak, heatmap e ranking são calculados a partir das sessões, nunca guardados em tabela própria. Não existe número que possa ficar desatualizado em relação ao que realmente aconteceu.",
       },
       {
+        q: "Como o app chegou à Microsoft Store?",
+        a: "O site já era a fonte única, então o app para Windows é uma casca Electron fina que carrega o próprio Astra: o front continua se atualizando pela Vercel, sem novo instalador. Para a loja, o pacote AppX leva a identidade do Partner Center, não se atualiza sozinho (a loja cuida disso) e passa pela certificação, que revisa classificação etária, política de privacidade e permissões.",
+      },
+      {
         q: "Por que refresh token rotativo?",
         a: "O token de acesso dura 15 minutos. O refresh token muda a cada uso; se um token já usado reaparecer, é sinal de roubo e a sessão inteira é revogada.",
       },
     ],
-    tech: ["Java 21", "Spring Boot", "PostgreSQL", "React"],
+    tech: ["Java 21", "Spring Boot", "PostgreSQL", "React", "Electron"],
   },
   {
     index: "02",

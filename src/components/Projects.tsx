@@ -30,6 +30,16 @@ function Case({ project }: { project: Project }) {
         >
           Ver online ↗
         </a>
+        {project.store && (
+          <a
+            href={project.store}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full border border-foreground/50 px-6 py-3 text-[15px] font-medium text-foreground transition-colors hover:border-foreground hover:bg-foreground/5"
+          >
+            Microsoft Store ↗
+          </a>
+        )}
         <a
           href={project.repo}
           target="_blank"
@@ -60,7 +70,7 @@ function Case({ project }: { project: Project }) {
 
       <section data-sheet-item className="mt-16">
         <h4 className="mb-6 font-mono text-[12px] tracking-[0.14em] text-muted uppercase">Destaques</h4>
-        <ol className="grid gap-x-10 border-t border-line md:grid-cols-3">
+        <ol className={`grid gap-x-10 border-t border-line ${project.features.length % 3 === 0 ? "md:grid-cols-3" : "md:grid-cols-2"}`}>
           {project.features.map((f, i) => (
             <li key={f} className="flex gap-3 border-b border-line py-5 md:border-b-0">
               <span className="pt-1 font-mono text-[12px] text-muted">{String(i + 1).padStart(2, "0")}</span>
@@ -72,7 +82,7 @@ function Case({ project }: { project: Project }) {
 
       <section data-sheet-item className="mt-14">
         <h4 className="mb-6 font-mono text-[12px] tracking-[0.14em] text-muted uppercase">Decisões</h4>
-        <dl className="grid gap-x-10 border-t border-line md:grid-cols-3">
+        <dl className={`grid gap-x-10 border-t border-line ${project.decisions.length % 3 === 0 ? "md:grid-cols-3" : "md:grid-cols-2"}`}>
           {project.decisions.map((d) => (
             <div key={d.q} className="border-b border-line py-6 md:border-b-0">
               <dt className="font-serif text-[clamp(22px,2vw,27px)] leading-tight">{d.q}</dt>

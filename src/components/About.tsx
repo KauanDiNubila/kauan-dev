@@ -1,19 +1,13 @@
 import { useDesktop } from "@/hooks/useDesktop"
 import { useSectionReveal } from "@/hooks/useSectionReveal"
 
-const facts = [
-  { label: "Nome", value: "Kauan Di Nubila" },
-  { label: "Idade", value: "20 anos" },
-  { label: "Formação", value: "Análise e Desenvolvimento de Sistemas" },
-  { label: "Foco", value: "Back-end com Java e Spring Boot" },
-  { label: "Explorando", value: "Microsserviços, mensageria, tempo real e cloud" },
-  { label: "Inglês", value: "Avançado" },
+const paragraphs = [
+  "Tenho 20 anos e comecei a estudar programação em 2025. Depois, entrei na faculdade de Análise e Desenvolvimento de Sistemas, onde estou hoje no 3º semestre. Fui parar no back-end porque me interessei pela arquitetura por trás de um sistema, pela complexidade das decisões e pelo leque de tecnologias e padrões que existem para montar cada um.",
+  "Aprendi muito por conta própria, com mais de 500 horas de cursos na Alura, e principalmente construindo projetos. O Astra começou como uma ferramenta para organizar meus próprios estudos, e hoje está publicado na Microsoft Store.",
+  "Agora, busco minha primeira oportunidade profissional em desenvolvimento back-end, onde possa contribuir com o conhecimento que construí na prática, trocar experiências com desenvolvedores mais experientes e continuar evoluindo ao trabalhar em equipe e desenvolver soluções utilizadas no dia a dia.",
 ]
 
-const paragraphs = [
-  "Meu foco está no desenvolvimento de sistemas bem estruturados, com atenção a arquitetura, segurança, integração entre serviços e qualidade de código. Nos meus projetos, tenho explorado tanto arquiteturas modulares quanto microserviços, além de tecnologias como mensageria, comunicação em tempo real e cloud.",
-  "Atualmente, busco minha primeira oportunidade profissional na área, onde possa aplicar o que venho construindo na prática, aprender com um time experiente e evoluir junto com projetos reais.",
-]
+const facts = ["ADS · Estácio (2025–2027)", "Java e Spring Boot", "Inglês avançado"]
 
 export function About() {
   const ref = useSectionReveal<HTMLElement>()
@@ -21,10 +15,10 @@ export function About() {
 
   return (
     <section id="sobre" ref={ref} className="relative">
-      <div className="mx-auto grid max-w-[1320px] gap-10 px-5 pt-28 pb-16 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-16 md:px-10 md:pt-40 md:pb-32">
-        <div className="md:order-none">
+      <div className="mx-auto grid max-w-[1320px] items-center gap-10 px-5 pt-28 pb-16 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-16 md:px-10 md:pt-40 md:pb-32">
+        <div>
           {desktop ? (
-            <div data-portrait aria-hidden className="sticky top-[18vh] mx-auto aspect-[720/760] h-[62vh] max-w-full" />
+            <div data-portrait aria-hidden className="mx-auto aspect-[720/760] h-[62vh] max-w-full" />
           ) : (
             <img
               src="/portrait-dither.png"
@@ -39,34 +33,33 @@ export function About() {
             01 — sobre
           </p>
           <h2 data-reveal className="font-serif text-[clamp(44px,6vw,92px)] leading-[0.92] tracking-[-0.015em]">
-            Back-end é onde eu <span className="italic">penso melhor.</span>
+            Sobre <span className="italic">mim.</span>
           </h2>
 
-          <dl data-reveal className="mt-14 grid gap-x-10 sm:grid-cols-2">
-            {facts.map((f) => (
-              <div key={f.label} className="border-t border-line py-4">
-                <dt className="mb-1 font-mono text-[12px] tracking-[0.12em] text-muted uppercase">{f.label}</dt>
-                <dd className="text-[17px] text-foreground">{f.value}</dd>
-              </div>
-            ))}
-            <div className="border-t border-line py-4 sm:col-span-2">
-              <dt className="mb-1 font-mono text-[12px] tracking-[0.12em] text-muted uppercase">Status</dt>
-              <dd className="flex items-center gap-2.5 text-[17px] text-foreground">
-                <span className="relative flex size-2">
-                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-foreground opacity-50 motion-reduce:animate-none" />
-                  <span className="relative inline-flex size-2 rounded-full bg-foreground" />
-                </span>
-                Buscando a primeira oportunidade
-              </dd>
-            </div>
-          </dl>
-
-          <div className="mt-14 flex max-w-[640px] flex-col gap-6 text-[18px] leading-[1.7] text-foreground/90">
+          <div className="mt-10 flex max-w-[640px] flex-col gap-6 text-[18px] leading-[1.7] text-foreground/90">
             {paragraphs.map((p) => (
               <p key={p} data-reveal>
                 {p}
               </p>
             ))}
+          </div>
+
+          <div data-reveal className="mt-10 max-w-[640px] border-t border-line pt-6">
+            <p className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-[12px] tracking-[0.12em] text-muted uppercase">
+              {facts.map((f, i) => (
+                <span key={f} className="flex gap-3">
+                  {i > 0 && <span aria-hidden>·</span>}
+                  {f}
+                </span>
+              ))}
+            </p>
+            <p className="mt-4 flex items-center gap-2.5 text-[16px] text-foreground">
+              <span className="relative flex size-2">
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-foreground opacity-50 motion-reduce:animate-none" />
+                <span className="relative inline-flex size-2 rounded-full bg-foreground" />
+              </span>
+              Buscando a primeira oportunidade
+            </p>
           </div>
         </div>
       </div>

@@ -38,6 +38,16 @@ function Case({ project }: { project: Project }) {
         >
           Código ↗
         </a>
+        {project.store && (
+          <a
+            href={project.store}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full border border-line px-6 py-3 text-[15px] font-medium text-foreground transition-colors hover:border-foreground/40"
+          >
+            Microsoft Store ↗
+          </a>
+        )}
       </div>
 
       <ul data-sheet-item className="mt-12 flex flex-wrap gap-2 border-t border-line pt-8">
@@ -47,6 +57,18 @@ function Case({ project }: { project: Project }) {
           </li>
         ))}
       </ul>
+
+      <section data-sheet-item className="mt-14">
+        <h4 className="mb-5 font-mono text-[12px] tracking-[0.14em] text-muted uppercase">Funcionalidades</h4>
+        <ul className="grid gap-x-12 gap-y-3 xl:grid-cols-2">
+          {project.capabilities.map((c) => (
+            <li key={c.name} className="text-[16px] leading-snug">
+              <span className="text-foreground">{c.name}</span>
+              <span className="text-muted"> · {c.text}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       {architectures[project.slug] && (
         <section data-sheet-item className="mt-16">
@@ -72,9 +94,14 @@ function Case({ project }: { project: Project }) {
 
       <section data-sheet-item className="mt-14">
         <h4 className="mb-6 font-mono text-[12px] tracking-[0.14em] text-muted uppercase">Decisões</h4>
-        <dl className="grid gap-x-10 border-t border-line md:grid-cols-3">
+        <dl className={`grid gap-x-10 border-t border-line ${project.decisions.length === 4 ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
           {project.decisions.map((d) => (
-            <div key={d.q} className="border-b border-line py-6 md:border-b-0">
+            <div
+              key={d.q}
+              className={`border-b border-line py-6 ${
+                project.decisions.length === 4 ? "md:[&:nth-last-child(-n+2)]:border-b-0" : "md:border-b-0"
+              }`}
+            >
               <dt className="font-serif text-[clamp(22px,2vw,27px)] leading-tight">{d.q}</dt>
               <dd className="mt-3 text-[15px] leading-[1.65] text-foreground/85">{d.a}</dd>
             </div>

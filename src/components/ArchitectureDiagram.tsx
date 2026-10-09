@@ -146,6 +146,12 @@ function relations(id: string, arch: Architecture, nodes: Map<string, ArchNode>)
   const groups = new Map<string, string[]>()
   const add = (verb: string, n: string) => groups.set(verb, [...(groups.get(verb) ?? []), name(n)])
   arch.edges.forEach((e) => {
+    if (e.both && e.kind !== "event" && (e.from === id || e.to === id)) {
+      const other = e.from === id ? e.to : e.from
+      add(OUT[e.kind], other)
+      add(IN[e.kind], other)
+      return
+    }
     if (e.from === id) {
       const verb =
         e.kind === "event" && e.both
@@ -283,6 +289,7 @@ function Diagram({ arch }: { arch: Architecture }) {
           )}
 
           {arch.edges.map((e) => {
+            if (e.hidden) return null
             const a = endpoint(e.from, nodes.get(e.to) ?? { x: 0, y: 0 }, arch, nodes)
             const b = endpoint(e.to, nodes.get(e.from) ?? { x: 0, y: 0 }, arch, nodes)
             const s = STROKE[e.kind]

@@ -6,7 +6,9 @@ export type Project = {
   summary: string
   repo: string
   live: string
+  store?: string
   desc: string
+  capabilities: { name: string; text: string }[]
   features: string[]
   decisions: { q: string; a: string }[]
   tech: string[]
@@ -17,11 +19,20 @@ export const projects: Project[] = [
     index: "01",
     slug: "astra",
     name: "Astra",
-    tag: "em produção",
+    tag: "na Microsoft Store",
     summary: "Ecossistema de estudos e produtividade full-stack",
     repo: "https://github.com/KauanDiNubila/astra",
     live: "https://astra-app.dev",
-    desc: "Plataforma de estudos e produtividade com camada social em tempo real (amigos e chat cifrado) e integração com o GitHub.",
+    store: "https://apps.microsoft.com/detail/9NRB7QNCJGSP?hl=pt-br&gl=BR",
+    desc: "Plataforma de estudos e produtividade com camada social em tempo real (amigos e chat) e integração com o GitHub.",
+    capabilities: [
+      { name: "Sessões de foco", text: "Pomodoro ou registro manual, por categoria" },
+      { name: "Cursos e roadmaps", text: "com metas diárias e semanais" },
+      { name: "Dashboard", text: "heatmap, streak e tempo por categoria" },
+      { name: "Social", text: "amigos, ranking e chat em tempo real" },
+      { name: "Chamadas", text: "voz e vídeo com compartilhamento de tela" },
+      { name: "GitHub", text: "commits, PRs e issues ligados ao tempo estudado" },
+    ],
     features: [
       "Senha em BCrypt, com recusa de senhas vazadas, e login com Google e GitHub.",
       "Exportação de dados da LGPD montada a partir do que cada módulo expõe, sem acessar o banco dos vizinhos.",
@@ -40,6 +51,10 @@ export const projects: Project[] = [
         q: "Por que refresh token rotativo?",
         a: "O token de acesso dura 15 minutos. O refresh token muda a cada uso; se um token já usado reaparecer, é sinal de roubo e a sessão inteira é revogada.",
       },
+      {
+        q: "Por que cache no navegador?",
+        a: "Para trocar de página sem esperar a rede. O cache mostra a cópia na hora e sempre confere com o servidor, então nunca exibe dado velho. Num teste com latência simulada, percorrer as 4 páginas principais ficou 73% mais rápido.",
+      },
     ],
     tech: ["Java 21", "Spring Boot", "PostgreSQL", "React"],
   },
@@ -52,9 +67,17 @@ export const projects: Project[] = [
     repo: "https://github.com/KauanDiNubila/lexo-backend",
     live: "https://lexo-kauan1.duckdns.org",
     desc: "SaaS multi-tenant para escritórios de advocacia, construído para explorar os desafios reais de sistemas distribuídos.",
+    capabilities: [
+      { name: "Clientes e processos", text: "CPF/CNPJ, prazos e andamentos" },
+      { name: "Agenda e financeiro", text: "prazos e honorários" },
+      { name: "Portal do cliente", text: "acompanhamento sem login" },
+      { name: "IA jurídica", text: "resumo, assistente e petições" },
+      { name: "Equipe e segurança", text: "papéis, 2FA e auditoria" },
+      { name: "Avisos por e-mail", text: "notificação automática de prazos" },
+    ],
     features: [
-      "Dados isolados por organização em toda query e no cache.",
-      "Circuit breaker e tracing distribuído ponta a ponta.",
+      "Exclusão em cascata entre serviços por eventos no Kafka, sem transação distribuída: cada serviço apaga o que é seu.",
+      "Se um serviço cair, o circuit breaker corta as chamadas e responde na hora, em vez de deixar a requisição presa.",
       "Service discovery com Eureka: os serviços se encontram pelo nome, não por endereço fixo.",
     ],
     decisions: [

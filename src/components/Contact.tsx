@@ -1,5 +1,6 @@
 import { useSectionReveal } from "@/hooks/useSectionReveal"
 import { useDesktop } from "@/hooks/useDesktop"
+import { CV } from "@/data/cv"
 
 const links = [
   { label: "GitHub", href: "https://github.com/KauanDiNubila" },
@@ -48,6 +49,9 @@ export function Contact() {
                 {l.label} ↗
               </a>
             ))}
+            <a href={CV} download className="text-muted transition-colors hover:text-foreground">
+              Currículo (PDF) ↓
+            </a>
           </div>
         </div>
 

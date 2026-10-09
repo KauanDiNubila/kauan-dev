@@ -1,6 +1,6 @@
 # Portfólio · Kauan Di Nubila
 
-Site pessoal de um desenvolvedor back-end Java, com foco em mostrar sistemas que estão no ar: **[kauan-dev-puce.vercel.app](https://kauan-dev-puce.vercel.app)**
+Site pessoal de um desenvolvedor back-end Java, com foco em mostrar sistemas que estão no ar: **[kauandinubila.vercel.app](https://kauandinubila.vercel.app)**
 
 Tema escuro e monocromático. O fundo é uma galáxia de partículas que acompanha o scroll: vista de cima no início, atravessada durante as seções, reorganizada num retrato no "sobre" e nas mãos da Criação de Adão no contato (a partir de uma foto de domínio público do afresco).
 

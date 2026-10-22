@@ -196,9 +196,6 @@ export function Skills() {
   return (
     <section id="skills" ref={ref} className="relative">
       <div className="mx-auto max-w-[1320px] px-5 pt-28 pb-16 md:px-10 md:pt-40 md:pb-32">
-        <p data-reveal className="mb-10 font-mono text-[12px] tracking-[0.16em] text-muted uppercase">
-          04 — skills
-        </p>
         <h2 data-reveal className="mb-12 font-serif md:mb-20 text-[clamp(44px,7vw,104px)] leading-[0.92] tracking-[-0.015em]">
           Ferramentas do <span className="italic">dia a dia.</span>
         </h2>

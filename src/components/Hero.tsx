@@ -34,17 +34,13 @@ export function Hero() {
           <span className="italic">Di Nubila</span>
         </h1>
 
-        <div className="mt-10 flex flex-col gap-6 border-t border-line pt-5 md:flex-row md:items-end md:justify-between">
-          <p data-hero-fade className="max-w-[340px] text-[15px] leading-relaxed text-muted">
-            Foco em Java, arquitetura de software e sistemas bem construídos.
-          </p>
-          <div data-hero-fade className="flex items-center gap-8 font-mono text-[11px] tracking-[0.14em] text-subtle uppercase">
-            <span>java · spring boot · microsserviços</span>
-            <a href="#sobre" className="text-muted transition-colors hover:text-foreground">
-              role ↓
-            </a>
-          </div>
-        </div>
+        <a
+          data-hero-fade
+          href="#sobre"
+          className="mt-12 self-end font-mono text-[11px] tracking-[0.14em] text-muted uppercase transition-colors hover:text-foreground"
+        >
+          role ↓
+        </a>
       </div>
     </section>
   )

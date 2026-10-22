@@ -29,9 +29,6 @@ export function About() {
         </div>
 
         <div>
-          <p data-reveal className="mb-10 font-mono text-[12px] tracking-[0.16em] text-muted uppercase">
-            01 — sobre
-          </p>
           <h2 data-reveal className="font-serif text-[clamp(44px,6vw,92px)] leading-[0.92] tracking-[-0.015em]">
             Sobre <span className="italic">mim.</span>
           </h2>

@@ -1,23 +1,39 @@
+import { useEffect, useState } from "react"
 import { CV } from "@/data/cv"
 
 const links = [
-  { href: "#sobre", n: "01", label: "sobre" },
-  { href: "#experiencia", n: "02", label: "experiência" },
-  { href: "#projetos", n: "03", label: "projetos" },
-  { href: "#skills", n: "04", label: "skills" },
-  { href: "#formacao", n: "05", label: "formação" },
-  { href: "#contato", n: "06", label: "contato" },
+  { href: "#sobre", label: "sobre" },
+  { href: "#experiencia", label: "experiência" },
+  { href: "#projetos", label: "projetos" },
+  { href: "#skills", label: "skills" },
+  { href: "#formacao", label: "formação" },
+  { href: "#contato", label: "contato" },
 ]
 
 export function Nav() {
+  const [named, setNamed] = useState(false)
+
+  useEffect(() => {
+    const update = () => setNamed(window.scrollY > window.innerHeight * 0.75)
+    update()
+    window.addEventListener("scroll", update, { passive: true })
+    return () => window.removeEventListener("scroll", update)
+  }, [])
+
   return (
     <nav className="fixed inset-x-0 top-0 z-40 border-b border-line bg-background/85 backdrop-blur-md md:border-b-0 md:bg-transparent md:bg-linear-to-b md:from-background md:via-background/80 md:to-transparent md:backdrop-blur-none">
       <div className="mx-auto flex h-14 max-w-[1320px] md:h-20 items-center justify-between px-5 font-mono text-[11px] tracking-[0.14em] text-foreground uppercase md:px-10">
-        <span className="opacity-60">portfólio — 2026</span>
+        <a
+          href="#top"
+          aria-hidden={!named}
+          tabIndex={named ? undefined : -1}
+          className={`transition-opacity duration-500 hover:opacity-100 ${named ? "opacity-60" : "pointer-events-none opacity-0"}`}
+        >
+          Kauan Di Nubila
+        </a>
         <div className="hidden items-center gap-7 md:flex">
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="group flex gap-1.5 opacity-60 transition-opacity hover:opacity-100">
-              <span className="opacity-50">{l.n}</span>
+            <a key={l.href} href={l.href} className="opacity-60 transition-opacity hover:opacity-100">
               {l.label}
             </a>
           ))}

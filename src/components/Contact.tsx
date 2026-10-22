@@ -25,7 +25,7 @@ export function Contact() {
 
         <div className="flex flex-col items-center text-center">
           <p data-reveal className="mb-6 font-mono text-[11px] tracking-[0.18em] text-muted uppercase">
-            05 — contato
+            06 — contato
           </p>
           <a
             data-reveal

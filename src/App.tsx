@@ -3,6 +3,7 @@ import { About } from "@/components/About"
 import { Contact } from "@/components/Contact"
 import { Cursor } from "@/components/Cursor"
 import { Education } from "@/components/Education"
+import { Experience } from "@/components/Experience"
 import { Hero } from "@/components/Hero"
 import { Nav } from "@/components/Nav"
 import { Projects } from "@/components/Projects"
@@ -32,6 +33,7 @@ function App() {
       <main className="relative z-10">
         <Hero />
         <About />
+        <Experience />
         <Projects />
         <Skills />
         <Education />

@@ -4,7 +4,7 @@ import { useSectionReveal } from "@/hooks/useSectionReveal"
 const paragraphs = [
   "Tenho 20 anos e comecei a estudar programação em 2025. Depois, entrei na faculdade de Análise e Desenvolvimento de Sistemas, onde estou hoje no 3º semestre. Fui parar no back-end porque me interessei pela arquitetura por trás de um sistema, pela complexidade das decisões e pelo leque de tecnologias e padrões que existem para montar cada um.",
   "Aprendi muito por conta própria, com mais de 500 horas de cursos na Alura, e principalmente construindo projetos. O Astra começou como uma ferramenta para organizar meus próprios estudos, e hoje está publicado na Microsoft Store.",
-  "Agora, busco minha primeira oportunidade profissional em desenvolvimento back-end, onde possa contribuir com o conhecimento que construí na prática, trocar experiências com desenvolvedores mais experientes e continuar evoluindo ao trabalhar em equipe e desenvolver soluções utilizadas no dia a dia.",
+  "Agora, busco uma oportunidade em desenvolvimento back-end, onde possa contribuir com o conhecimento que construí na prática, trocar experiências com desenvolvedores mais experientes e continuar evoluindo ao trabalhar em equipe e desenvolver soluções utilizadas no dia a dia.",
 ]
 
 const facts = ["ADS · Estácio (2025–2027)", "Java e Spring Boot", "Inglês avançado"]
@@ -58,7 +58,7 @@ export function About() {
                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-foreground opacity-50 motion-reduce:animate-none" />
                 <span className="relative inline-flex size-2 rounded-full bg-foreground" />
               </span>
-              Buscando a primeira oportunidade
+              Aberto a novas oportunidades
             </p>
           </div>
         </div>

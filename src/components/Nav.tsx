@@ -2,10 +2,11 @@ import { CV } from "@/data/cv"
 
 const links = [
   { href: "#sobre", n: "01", label: "sobre" },
-  { href: "#projetos", n: "02", label: "projetos" },
-  { href: "#skills", n: "03", label: "skills" },
-  { href: "#formacao", n: "04", label: "formação" },
-  { href: "#contato", n: "05", label: "contato" },
+  { href: "#experiencia", n: "02", label: "experiência" },
+  { href: "#projetos", n: "03", label: "projetos" },
+  { href: "#skills", n: "04", label: "skills" },
+  { href: "#formacao", n: "05", label: "formação" },
+  { href: "#contato", n: "06", label: "contato" },
 ]
 
 export function Nav() {

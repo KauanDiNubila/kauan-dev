@@ -24,7 +24,7 @@ export const projects: Project[] = [
     repo: "https://github.com/KauanDiNubila/astra",
     live: "https://astra-app.dev",
     store: "https://apps.microsoft.com/detail/9NRB7QNCJGSP?hl=pt-br&gl=BR",
-    desc: "Plataforma de estudos e produtividade com camada social em tempo real (amigos e chat) e integração com o GitHub.",
+    desc: "Plataforma de estudos e produtividade com camada social em tempo real (amigos e chat) e integração com o GitHub, com o back-end em arquitetura hexagonal.",
     capabilities: [
       { name: "Sessões de foco", text: "Pomodoro ou registro manual, por categoria" },
       { name: "Cursos e roadmaps", text: "com metas diárias e semanais" },
@@ -35,13 +35,17 @@ export const projects: Project[] = [
     ],
     features: [
       "Senha em BCrypt, com recusa de senhas vazadas, e login com Google e GitHub.",
-      "Exportação de dados da LGPD montada a partir do que cada módulo expõe, sem acessar o banco dos vizinhos.",
-      "Testes de integração em Postgres real, rodando no CI.",
+      "Exportação de dados da LGPD em que cada módulo pluga a sua parte numa porta do módulo de privacidade, sem que ele conheça nenhum dos outros.",
+      "Mais de 400 testes no CI: domínio sem Spring, services com portas simuladas, fluxos completos em Postgres real e regras de arquitetura.",
     ],
     decisions: [
       {
         q: "Por que monólito modular?",
-        a: "Um produto com um só desenvolvedor não precisa de rede entre módulos. As fronteiras ficam no código: um módulo só conversa com outro por services públicos, e o grafo de dependências não tem ciclos.",
+        a: "Um produto com um só desenvolvedor não precisa de rede entre módulos. As fronteiras ficam no código, em arquitetura hexagonal: um módulo só usa as portas de entrada do vizinho, e um teste de arquitetura (ArchUnit) quebra o build se alguém furar essa regra ou criar um ciclo.",
+      },
+      {
+        q: "Por que arquitetura hexagonal?",
+        a: "Porque o negócio não deveria depender de framework nem de banco. Cada módulo tem um domínio puro, portas que dizem o que ele oferece e o que precisa, e adaptadores que ligam isso ao Spring, ao JPA e às APIs externas. Isso deixa as regras testáveis sem subir nada e permite trocar a borda sem mexer no centro. A migração foi feita módulo a módulo, com os testes escritos antes, e cada decisão ficou registrada em ADRs no repositório.",
       },
       {
         q: "Por que a sessão é a única fonte de dados?",
@@ -56,7 +60,7 @@ export const projects: Project[] = [
         a: "Para trocar de página sem esperar a rede. O cache mostra a cópia na hora e sempre confere com o servidor, então nunca exibe dado velho. Num teste com latência simulada, percorrer as 4 páginas principais ficou 73% mais rápido.",
       },
     ],
-    tech: ["Java 21", "Spring Boot", "PostgreSQL", "React"],
+    tech: ["Java 21", "Spring Boot", "Arquitetura hexagonal", "PostgreSQL", "React"],
   },
   {
     index: "02",

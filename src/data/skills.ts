@@ -36,6 +36,10 @@ export const categories: Category[] = [
   {
     title: "Arquitetura & mensageria",
     skills: [
+      {
+        name: "Arquitetura hexagonal",
+        used: [{ project: "Astra", text: "domínio puro, portas e adaptadores em cada módulo, com as fronteiras verificadas por ArchUnit" }],
+      },
       { name: "Microsserviços", used: [{ project: "Lexo", text: "9 serviços independentes, cada um com banco próprio" }] },
       {
         name: "Apache Kafka",

@@ -1,8 +1,17 @@
 export type NodeKind = "service" | "infra" | "external" | "module"
 export type EdgeKind = "route" | "sync" | "event" | "queue" | "dep" | "uses"
 
-export type ArchNode = { id: string; label: string; sub?: string; x: number; y: number; kind: NodeKind; db?: boolean; desc: string }
-export type ArchEdge = { from: string; to: string; kind: EdgeKind; bend?: number; both?: boolean; hidden?: boolean }
+export type Hexagon = {
+  domain: string[]
+  useCases: { count: number; examples: string[] }
+  outPorts: { count: number; examples: string[] }
+  adaptersIn: string[]
+  adaptersOut: string[]
+  note?: string
+}
+
+export type ArchNode = { id: string; label: string; sub?: string; x: number; y: number; kind: NodeKind; db?: boolean; desc: string; hex?: Hexagon }
+export type ArchEdge = { from: string; to: string; kind: EdgeKind; bend?: number; both?: boolean; hidden?: boolean; via?: string[] }
 export type Architecture = {
   width: number
   height: number
@@ -12,6 +21,7 @@ export type Architecture = {
   nodes: ArchNode[]
   edges: ArchEdge[]
   legend: EdgeKind[]
+  rules?: string[]
 }
 
 export const edgeLabel: Record<EdgeKind, string> = {
@@ -79,7 +89,7 @@ const lexo: Architecture = {
   legend: ["route", "sync", "event", "queue", "uses"],
 }
 
-const astra: Architecture = {
+const astraBase: Architecture = {
   width: 1000,
   height: 640,
   caption: "Monólito modular hexagonal: 10 módulos, só portas entre eles e nenhum ciclo",
@@ -134,6 +144,111 @@ const astra: Architecture = {
     { from: "stats", to: "user", kind: "dep" },
   ],
   legend: ["route", "dep", "uses"],
+}
+
+const astraHexagons: Record<string, Hexagon> = {
+  tracking: {
+    domain: ["Session", "Category"],
+    useCases: { count: 15, examples: ["RegisterSessionUseCase", "ListSessionsQuery", "LinkRepositoryToSessionUseCase"] },
+    outPorts: { count: 15, examples: ["CreateSessionPort", "CheckCategoryOwnerPort", "CheckCourseOwnerPort"] },
+    adaptersIn: ["web", "event", "category", "learning", "privacy"],
+    adaptersOut: ["persistence", "category", "learning", "github"],
+  },
+  user: {
+    domain: ["User", "OAuthConnection", "RefreshToken", "Role"],
+    useCases: { count: 23, examples: ["RegisterUserUseCase", "LogInUseCase", "RotateRefreshTokenUseCase"] },
+    outPorts: { count: 16, examples: ["CreateUserPort", "PasswordHasherPort", "CheckPasswordBreachPort"] },
+    adaptersIn: ["web", "security", "privacy"],
+    adaptersOut: ["persistence", "crypto", "hibp", "memory", "event"],
+  },
+  learning: {
+    domain: ["Course", "CourseModule", "Lesson", "Goal"],
+    useCases: { count: 18, examples: ["CreateCourseUseCase", "CompleteLessonUseCase", "SetGoalUseCase"] },
+    outPorts: { count: 11, examples: ["LoadCoursePort", "UpdateCoursePort", "CheckGithubRepositoryOwnerPort"] },
+    adaptersIn: ["web", "privacy"],
+    adaptersOut: ["persistence", "github"],
+  },
+  github: {
+    domain: ["GitHubConnection", "SyncedRepository", "LanguageShare", "StepEvidence"],
+    useCases: { count: 14, examples: ["ConnectGitHubUseCase", "SyncGitHubUseCase", "GetGitHubInsightsQuery"] },
+    outPorts: { count: 14, examples: ["LoadConnectionPort", "ExchangeOAuthCodePort", "LoadContributionsPort"] },
+    adaptersIn: ["web", "privacy"],
+    adaptersOut: ["persistence", "api", "token"],
+  },
+  roadmap: {
+    domain: ["Roadmap", "RoadmapStep", "CoursePin", "StepProgress"],
+    useCases: { count: 14, examples: ["CreateRoadmapUseCase", "PinCourseUseCase", "SetStepStatusUseCase"] },
+    outPorts: { count: 12, examples: ["LoadRoadmapPort", "SaveCoursePinPort", "GithubEvidencePort"] },
+    adaptersIn: ["web", "privacy"],
+    adaptersOut: ["persistence", "github", "learning"],
+  },
+  social: {
+    domain: ["Friendship"],
+    useCases: { count: 7, examples: ["SendFriendRequestUseCase", "AcceptFriendRequestUseCase", "GetFriendIdsQuery"] },
+    outPorts: { count: 7, examples: ["CreateFriendshipPort", "LoadFriendshipPort", "FindUserByHandlePort"] },
+    adaptersIn: ["web", "privacy"],
+    adaptersOut: ["persistence", "user"],
+  },
+  chat: {
+    domain: ["ChatGroup", "Message", "GroupMember"],
+    useCases: { count: 18, examples: ["SendDirectMessageUseCase", "SendGroupMessageUseCase", "PinMessageUseCase"] },
+    outPorts: { count: 20, examples: ["CreateMessagePort", "LoadGroupPort", "NotifyChatPort"] },
+    adaptersIn: ["web", "websocket", "privacy"],
+    adaptersOut: ["persistence", "github", "social", "user"],
+  },
+  call: {
+    domain: ["CallBoard", "ActiveCall", "CallParticipant"],
+    useCases: { count: 8, examples: ["StartCallUseCase", "JoinCallUseCase", "RelaySignalUseCase"] },
+    outPorts: { count: 6, examples: ["CallBoardPort", "NotifyCallPort", "ScheduleCallTaskPort"] },
+    adaptersIn: ["web", "websocket"],
+    adaptersOut: ["memory", "scheduler", "chat", "social", "user"],
+  },
+  stats: {
+    domain: ["FocusHistory", "DayMinutes", "RankingPeriod"],
+    useCases: { count: 4, examples: ["GetDashboardQuery", "GetHeatmapQuery", "GetRankingQuery"] },
+    outPorts: { count: 5, examples: ["LoadFocusedMinutesPort", "LoadMinutesByUserPort", "LoadRankedUsersPort"] },
+    adaptersIn: ["web"],
+    adaptersOut: ["session", "learning", "social", "user"],
+  },
+  privacy: {
+    domain: [],
+    useCases: { count: 1, examples: ["ExportUserDataQuery"] },
+    outPorts: { count: 1, examples: ["ExportUserDataPort"] },
+    adaptersIn: ["web"],
+    adaptersOut: [],
+    note: "Não conhece nenhum módulo. Cada um pluga a sua parte da exportação na ExportUserDataPort, num adaptador de entrada próprio.",
+  },
+}
+
+const astraVia: Record<string, string[]> = {
+  "call>chat": ["GetGroupInfoQuery"],
+  "call>social": ["CheckFriendshipQuery"],
+  "call>user": ["LoadUserSummariesQuery"],
+  "chat>github": ["ListVisibleProfilesQuery"],
+  "chat>social": ["CheckFriendshipQuery", "GetFriendIdsQuery"],
+  "chat>user": ["LoadUserSummariesQuery"],
+  "learning>github": ["CheckRepositoryOwnerQuery", "ListRepositoriesQuery"],
+  "roadmap>github": ["GetStepEvidenceQuery"],
+  "roadmap>learning": ["CheckCourseOwnerQuery", "ListCourseIdsQuery"],
+  "social>user": ["FindUserByHandleQuery", "LoadUserSummariesQuery"],
+  "stats>learning": ["ListGoalsQuery"],
+  "stats>social": ["GetFriendIdsQuery"],
+  "stats>tracking": ["GetFocusedMinutesQuery", "GetMinutesByUserQuery"],
+  "stats>user": ["LoadUserSummariesQuery"],
+  "tracking>github": ["CheckRepositoryOwnerQuery", "GetSessionActivityQuery"],
+  "tracking>learning": ["CheckCourseOwnerQuery"],
+}
+
+const astra: Architecture = {
+  ...astraBase,
+  nodes: astraBase.nodes.map((n) => (astraHexagons[n.id] ? { ...n, hex: astraHexagons[n.id] } : n)),
+  edges: astraBase.edges.map((e) => (astraVia[`${e.from}>${e.to}`] ? { ...e, via: astraVia[`${e.from}>${e.to}`] } : e)),
+  rules: [
+    "o domínio não conhece Spring nem JPA",
+    "de fora, um módulo só usa as portas de entrada do outro",
+    "serviços e adaptadores são privados ao módulo",
+    "nenhum ciclo entre módulos",
+  ],
 }
 
 export const architectures: Record<string, Architecture> = { lexo, astra }

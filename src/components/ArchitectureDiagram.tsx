@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react"
+import type { ReactNode } from "react"
 import { edgeLabel, type ArchEdge, type ArchNode, type Architecture, type EdgeKind } from "@/data/architecture"
 import { useDesktop } from "@/hooks/useDesktop"
 
@@ -174,6 +175,93 @@ function relations(id: string, arch: Architecture, nodes: Map<string, ArchNode>)
   return [...groups.entries()]
 }
 
+function Names({ names }: { names: string[] }) {
+  return <span className="font-mono text-[13px]">{names.join(", ")}</span>
+}
+
+function ModuleDetails({ node, arch, nodes }: { node: ArchNode; arch: Architecture; nodes: Map<string, ArchNode> }) {
+  const hex = node.hex
+  if (!hex) return null
+  const talks = arch.edges.filter((e) => e.from === node.id && e.via)
+  const rows: { label: string; content: ReactNode }[] = [
+    { label: "Domínio", content: hex.domain.length ? <Names names={hex.domain} /> : "nenhum" },
+    {
+      label: "Portas de entrada",
+      content: (
+        <>
+          <span className="text-muted">{hex.useCases.count} · </span>
+          <Names names={hex.useCases.examples} />
+        </>
+      ),
+    },
+    {
+      label: "Portas de saída",
+      content: (
+        <>
+          <span className="text-muted">{hex.outPorts.count} · </span>
+          <Names names={hex.outPorts.examples} />
+        </>
+      ),
+    },
+    {
+      label: "Adaptadores",
+      content: (
+        <>
+          <span className="text-muted">entram por </span>
+          <Names names={hex.adaptersIn} />
+          {hex.adaptersOut.length > 0 && (
+            <>
+              <span className="text-muted"> · saem por </span>
+              <Names names={hex.adaptersOut} />
+            </>
+          )}
+        </>
+      ),
+    },
+  ]
+  if (talks.length > 0) {
+    rows.push({
+      label: "Fala com",
+      content: (
+        <>
+          {talks.map((e) => (
+            <span key={e.to} className="block">
+              {nodes.get(e.to)?.label ?? e.to} <span className="text-muted">por</span> <Names names={e.via ?? []} />
+            </span>
+          ))}
+        </>
+      ),
+    })
+  }
+  if (hex.note) rows.push({ label: "Em resumo", content: hex.note })
+  return (
+    <dl className="mt-4 grid gap-x-4 gap-y-2 text-[14px] leading-snug sm:grid-cols-[8.5rem_minmax(0,1fr)]">
+      {rows.map(({ label, content }) => (
+        <div key={label} className="contents">
+          <dt className="text-muted">{label}</dt>
+          <dd className="mb-2 text-foreground/90 sm:mb-0">{content}</dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
+
+function Rules({ rules }: { rules: string[] }) {
+  return (
+    <div>
+      <p className="mb-2 font-mono text-[11px] tracking-[0.14em] text-muted uppercase">Conferido a cada build (ArchUnit)</p>
+      <ul className="flex flex-col gap-1.5">
+        {rules.map((rule) => (
+          <li key={rule} className="flex gap-2.5 text-[14px] leading-snug text-foreground/90">
+            <span className="mt-[7px] size-1.5 shrink-0 rounded-full bg-foreground/70" aria-hidden />
+            {rule}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 function ArchitectureList({ arch }: { arch: Architecture }) {
   const [open, setOpen] = useState<string | null>(null)
   const nodes = useMemo(() => new Map(arch.nodes.map((n) => [n.id, n])), [arch])
@@ -226,6 +314,7 @@ function ArchitectureList({ arch }: { arch: Architecture }) {
                             </div>
                           ))}
                         </dl>
+                        <ModuleDetails node={n} arch={arch} nodes={nodes} />
                       </div>
                     </div>
                   </div>
@@ -235,6 +324,7 @@ function ArchitectureList({ arch }: { arch: Architecture }) {
           </ul>
         </div>
       ))}
+      {arch.rules && <Rules rules={arch.rules} />}
     </div>
   )
 }
@@ -259,6 +349,7 @@ function Diagram({ arch }: { arch: Architecture }) {
   }, [active, arch])
   const current = active ? nodes.get(active) : null
   const hasDb = arch.nodes.some((n) => n.db)
+  const hasHex = arch.nodes.some((n) => n.hex)
 
   return (
     <div>
@@ -326,6 +417,7 @@ function Diagram({ arch }: { arch: Architecture }) {
       <div className="mt-6 grid gap-6 border-t border-line pt-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
         <div className="flex flex-col gap-4">
           <Legend kinds={arch.legend} />
+          {arch.rules && <Rules rules={arch.rules} />}
           {hasDb && (
             <p className="flex items-center gap-2.5 text-[14px] text-muted">
               <span className="inline-block size-2 border border-foreground/70" />
@@ -333,11 +425,12 @@ function Diagram({ arch }: { arch: Architecture }) {
             </p>
           )}
         </div>
-        <div className="min-h-[72px]">
+        <div className={hasHex ? "min-h-[21rem]" : "min-h-[72px]"}>
           {current ? (
             <>
               <p className="font-serif text-[30px] leading-none">{current.label}</p>
               <p className="mt-2 text-[16px] leading-relaxed text-foreground/90">{current.desc}</p>
+              {current && <ModuleDetails node={current} arch={arch} nodes={nodes} />}
             </>
           ) : (
             <p className="text-[16px] leading-relaxed text-muted">

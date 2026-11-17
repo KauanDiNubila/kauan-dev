@@ -44,9 +44,9 @@ const lexo: Architecture = {
   ],
   nodes: [
     { id: "fe", label: "Front-end", sub: "app + portal do cliente", x: 500, y: 40, kind: "external", desc: "React + Vite. O app do escritório e o portal do cliente falam só com o gateway." },
-    { id: "gw", label: "API Gateway", sub: ":8090", x: 500, y: 140, kind: "service", desc: "Porta de entrada única. Valida o JWT, assina a identidade com HMAC, remove headers forjados e aplica rate limit por IP no Redis." },
+    { id: "gw", label: "API Gateway", sub: ":8090", x: 500, y: 140, kind: "service", desc: "Porta de entrada única. Valida o JWT, assina a identidade com HMAC, remove headers forjados, aplica rate limit por IP no Redis e repassa o endereço real do cliente ao auth para o limite de login." },
     { id: "eureka", label: "Eureka", sub: "discovery", x: 820, y: 140, kind: "service", desc: "Registro e descoberta: o gateway e o Feign encontram os serviços pelo nome, não por endereço fixo." },
-    { id: "auth", label: "auth", sub: ":8082", x: 90, y: 280, kind: "service", db: true, desc: "Usuários, organizações, 2FA e equipe. Publica eventos de 2FA e de equipe no Kafka e enfileira e-mails no RabbitMQ." },
+    { id: "auth", label: "auth", sub: ":8082", x: 90, y: 280, kind: "service", db: true, desc: "Usuários, organizações, 2FA, equipe, troca de senha e recuperação por link. Limita tentativas de login por e-mail e endereço, encerra as sessões ao mudar a senha ou o 2FA, publica eventos no Kafka e enfileira e-mails no RabbitMQ." },
     { id: "cliente", label: "cliente", sub: ":8083", x: 260, y: 280, kind: "service", db: true, desc: "Clientes (CPF/CNPJ) e o portal do cliente, que agrega processos e financeiro via Feign. Publica CLIENTE_CRIADO e CLIENTE_EXCLUIDO." },
     { id: "processo", label: "processo", sub: ":8086", x: 430, y: 280, kind: "service", db: true, desc: "Processos, prazos e andamentos. Publica eventos no Kafka, consome a exclusão de cliente e enfileira e-mails de prazo." },
     { id: "financeiro", label: "financeiro", sub: ":8081", x: 600, y: 280, kind: "service", db: true, desc: "Honorários. Consulta cliente e processo via Feign e consome as exclusões para apagar em cascata." },
